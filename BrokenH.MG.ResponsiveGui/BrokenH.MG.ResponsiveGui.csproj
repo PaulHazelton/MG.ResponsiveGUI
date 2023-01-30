@@ -9,7 +9,7 @@
 The Layout class allows you to position elements using most of the same functionality availible in css, allowing you to easily create game menus that work on many different size screens.
 This package is currently not finished.</Description>
 	<Copyright>Copyright (c) Paul Hazelton 2023</Copyright>
-	<RepositoryUrl>https://github.com/PaulHazelton/MG.ResponsiveUI</RepositoryUrl>
+	<RepositoryUrl>https://github.com/PaulHazelton/MG.ResponsiveGUI</RepositoryUrl>
 	<PackageTags>MonoGame; GUI; UI; ResponsiveGUI; ResponsiveUI; Responsive; Videogame Menu;</PackageTags>
 	<Version>0.1.0</Version>
   </PropertyGroup>
