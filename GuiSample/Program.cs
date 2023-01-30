@@ -1,3 +1,3 @@
 ﻿
-using var game = new GuiSample.Game1();
+using var game = new GuiSample.ResponsiveGuiSample();
 game.Run();

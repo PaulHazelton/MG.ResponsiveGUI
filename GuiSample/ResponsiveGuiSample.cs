@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GuiSample;
 
-public class Game1 : Game
+public class ResponsiveGuiSample : Game
 {
 	// MonoGame stuff
 	private GraphicsDeviceManager _graphics;
@@ -26,7 +26,7 @@ public class Game1 : Game
 	private RootGuiElement _about;
 
 
-	public Game1()
+	public ResponsiveGuiSample()
 	{
 		_graphics = new GraphicsDeviceManager(this)
 		{
