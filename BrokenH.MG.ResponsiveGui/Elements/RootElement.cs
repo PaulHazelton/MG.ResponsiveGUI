@@ -72,7 +72,7 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 				if (FocusedElement.OverrideFocusChange && FocusedElement.ConsumeFocus(d, s))
 					return;
 
-				newFocus = FocusedElement.GetNextFocusableElement(d, s);
+				newFocus = FocusedElement.GetNextFocusableElement(d, s, FocusedElement.Position);
 			}
 
 			if (newFocus == null || newFocus == FocusedElement)

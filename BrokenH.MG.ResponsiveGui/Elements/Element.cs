@@ -570,11 +570,11 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			return null;
 		}
 
-		internal GuiElement? GetNextFocusableElement(UIDirection d, UISide s)
+		internal GuiElement? GetNextFocusableElement(UIDirection d, UISide s, Vector2 posOfFocusedElement)
 		{
-			return GetNextFocusableSibling(d, s) ?? ParentElement?.GetNextFocusableElement(d, s);
+			return GetNextFocusableSibling(d, s, posOfFocusedElement) ?? ParentElement?.GetNextFocusableElement(d, s, posOfFocusedElement);
 		}
-		internal GuiElement? GetNextFocusableSibling(UIDirection d, UISide s)
+		internal GuiElement? GetNextFocusableSibling(UIDirection d, UISide s, Vector2 posOfFocusedElement)
 		{
 			if (ParentElement == null)
 				return null;
@@ -582,12 +582,13 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			if (!ParentElement.CurrentLayout.FlexDirection.IsParallelWith(d))
 				return null;
 
+			// TODO: This is getting next sibling and seeing if they are focusable. Should loop until next focusable sibling is found
+			// Is there a sibling in that direction
 			int myIndex = ParentElement._children.IndexOf(this);
-			if (myIndex < 0)
-				return null;
 			if ((s == UISide.Start && myIndex - 1 < 0) || (s == UISide.End && myIndex + 1 >= ParentElement._children.Count))
 				return null;
 
+			// Get next sibling
 			GuiElement sibling;
 			sibling = ParentElement._children[(s == UISide.Start ? myIndex - 1 : myIndex + 1)];
 
@@ -595,7 +596,14 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 				return sibling;
 
 			if (sibling._focusableElementsInTree > 0)
-				return sibling.GetFurthestFocusableElememt(s.Invert());
+			{
+				// focus direction is parallel
+				// if (d == UIDirection.Vertical && sibling.CurrentLayout.FlexDirection == FlexDirection.Column)
+				if (sibling.CurrentLayout.FlexDirection.IsParallelWith(d))
+					return sibling.GetFurthestFocusableElememt(s.Invert());
+				else
+					return sibling.GetClosestFocusableElememtTo(posOfFocusedElement);
+			}
 
 			return null;
 		}
@@ -623,6 +631,27 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			}
 
 			return null;
+		}
+		internal GuiElement? GetClosestFocusableElememtTo(Vector2 pos)
+		{
+			if (_focusable)
+				return this;
+
+			var fd = CurrentLayout.FlexDirection;
+
+			// Loop through each child, find child with min x distance
+			GuiElement closestChild = null!;
+			float min = float.MaxValue;
+			foreach (var child in _children)
+			{
+				float distance = Math.Abs(child.Position.RelaventCoordinate(fd) - pos.RelaventCoordinate(fd));
+				if (child._focusableElementsInTree > 0 && distance < min)
+				{
+					closestChild = child;
+					min = distance;
+				}
+			}
+			return closestChild.GetClosestFocusableElememtTo(pos);
 		}
 
 		internal void ScrollElementIntoView()

@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 namespace BrokenH.MG.ResponsiveGui.Styles
 {
 	public enum FlexDirection
@@ -21,14 +23,20 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		FlexEnd,
 	}
 
-	// TODO: change back to internal
-	public static class FlexboxExtensions
+	internal static class FlexboxExtensions
 	{
-		public static bool IsParallelWith(this FlexDirection flexDirection, UIDirection d) => d switch
+		internal static bool IsParallelWith(this FlexDirection flexDirection, UIDirection d) => d switch
 		{
 			UIDirection.Horizontal => flexDirection == FlexDirection.Row,
 			UIDirection.Vertical => flexDirection == FlexDirection.Column,
 			_ => false,
+		};
+
+		internal static float RelaventCoordinate(this Vector2 v, FlexDirection d) => d switch
+		{
+			FlexDirection.Row => v.X,
+			FlexDirection.Column => v.Y,
+			_ => 0,
 		};
 	}
 }
