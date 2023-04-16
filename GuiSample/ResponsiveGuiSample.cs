@@ -53,13 +53,9 @@ public class ResponsiveGuiSample : Game
 		;
 
 		var font = Content.Load<SpriteFont>("pixelFont");
-		Layout.DefaultFont = font;
+		Layout.Initialize(font);
 
-		// Two ways to load a NineSlice.
-		// Just pass a texture and a NineSliceSpec
-		// var _itemFrame = new NineSliceAsset(Content.Load<Texture2D>("MenuItemFrame"), LoadJson<NineSliceSpec>("MenuItemFrame.json"));
-		// Or, pass the name, ContentManager, and a function to load the json. This only works if the texture and the spec are both in the same directory and have the same name (with different extensions)
-		var itemFrame = new NineSliceAsset("MenuItemFrame", Content, LoadJson<NineSliceSpec>);
+		var itemFrame = new NineSliceAsset(Content.Load<Texture2D>("MenuItemFrame"), LoadJson<NineSliceSpec>("MenuItemFrame.json"));
 
 		// var darkGray = new Color(40, 40, 40);
 		var darkGray = Color.DarkSlateGray;
