@@ -50,5 +50,11 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 					State = ElementStates.Hovered;
 			}
 		}
+
+		protected override void OnStateChange()
+		{
+			foreach (var child in Children)
+				child.State = State;
+		}
 	}
 }

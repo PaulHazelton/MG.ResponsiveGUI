@@ -12,11 +12,16 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 	{
 		#region Statics
 
-		public static SpriteFont? DefaultFont;
+		private static SpriteFont? DefaultFont;
 
 		public static float UIScale { get; set; } = 1.0f;
 
 		public static bool ScaleFontWithUIScale { get; set; } = true;
+
+		public static void Initialize(SpriteFont defaultFont)
+		{
+			DefaultFont = defaultFont;
+		}
 
 		private static float? GetValueByUnit(float? value, LayoutUnit unit) => unit switch
 		{
@@ -79,7 +84,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 
 		public NineSlice? NineSlice { get; set; }
 
-		public SpriteFont? Font { get; set; }
+		public SpriteFont Font { get; set; }
 		public float FontScale { get => ScaleFontWithUIScale ? _fontScale * UIScale : _fontScale; set => _fontScale = value; }
 
 		public TextAlign TextAlign = TextAlign.Center;
@@ -151,7 +156,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		{
 			SubLayouts = new();
 
-			Font = DefaultFont;
+			Font = DefaultFont ?? throw new System.InvalidOperationException($"Must call {nameof(Initialize)} before creating a layout object");
 		}
 		public Layout(Layout toCopy) : this(toCopy, true) { }
 		private Layout(Layout toCopy, bool copySublayouts)

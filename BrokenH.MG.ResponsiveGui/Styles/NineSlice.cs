@@ -1,6 +1,4 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BrokenH.MG.ResponsiveGui.Styles
@@ -28,7 +26,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		public Rectangle[] SourceRectangles { get; private set; }
 		public Rectangle[] DestinationRectangles { get; private set; }
 
-		
+
 		public NineSlice(NineSliceAsset asset)
 		{
 			_asset = asset;
@@ -121,11 +119,6 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		{
 			Texture = texture;
 			Spec = spec;
-		}
-		public NineSliceAsset(string path, ContentManager contentManager, Func<string, NineSliceSpec> fileLoader)
-		{
-			Texture = contentManager.Load<Texture2D>(path);
-			Spec = fileLoader(path + ".json");
 		}
 	}
 

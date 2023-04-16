@@ -62,6 +62,14 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 		public void ChangeFocusUp() => ChangeFocus(UIDirection.Vertical, UISide.Start);
 		public void ChangeFocusDown() => ChangeFocus(UIDirection.Vertical, UISide.End);
 
+		public void ActivateFocused(ButtonState eventType)
+		{
+			if (eventType == ButtonState.Pressed)
+				FocusedElement?.ActivatePress();
+			else
+				FocusedElement?.ActivateRelease();
+		}
+
 		private void ChangeFocus(UIDirection d, UISide s)
 		{
 			GuiElement? newFocus;

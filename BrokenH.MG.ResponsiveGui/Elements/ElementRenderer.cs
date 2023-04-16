@@ -133,7 +133,7 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			if (e.CurrentLayout.NineSlice != null)
 				e.CurrentLayout.NineSlice.Draw(spriteBatch, e.BoundingRectangle, e.CurrentLayout.ImageColor);
 			if (e.CurrentLayout.Image != null)
-				spriteBatch.Draw(e.CurrentLayout.Image, e.BoundingRectangle, null, e.CurrentLayout.ImageColor);
+				spriteBatch.Draw(e.CurrentLayout.Image, e.BoundingRectangle, e.CurrentLayout.SourceRectangle, e.CurrentLayout.ImageColor);
 
 			// Custom drawing
 			e.NotifyDraw(spriteBatch);
