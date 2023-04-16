@@ -81,6 +81,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 
 		public Texture2D? Image { get; set; }
 		public Color ImageColor { get; set; } = Color.White;
+		public Rectangle? SourceRectangle { get; set; } = null;
 
 		public NineSlice? NineSlice { get; set; }
 
@@ -174,6 +175,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 
 			Image = toCopy.Image;
 			ImageColor = toCopy.ImageColor;
+			SourceRectangle = toCopy.SourceRectangle;
 
 			NineSlice = toCopy.NineSlice;
 
