@@ -528,8 +528,8 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 			if (predicate(ParentElement))
 				return ParentElement;
-			else
-				return ParentElement.NearestAncestorWhere(predicate);
+
+			return ParentElement.NearestAncestorWhere(predicate);
 		}
 
 		// Other
@@ -681,8 +681,9 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 		}
 		internal static void ScrollIntoView(GuiElement parent, GuiElement child, GuiElement toBeSeen)
 		{
-			var parentBox = parent.BoundingRectangle;
+			var parentBox = parent.InnerRectangle;
 			var toBeSeenBox = toBeSeen.BoundingRectangle;
+			int scrollPadding = (int)parent.CurrentLayout.ScrollPadding;
 
 			if (parent.CurrentLayout.OverflowY == Overflow.Scroll)
 			{
@@ -691,10 +692,10 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 				// If toBeSeen is above parent, scroll it down
 				if (differenceTop > 0)
-					parent.DoScrolling(UIDirection.Vertical, differenceTop);
+					parent.DoScrolling(UIDirection.Vertical, (differenceTop + scrollPadding));
 				// Else, scroll it up
 				else if (differenceBottom > 0)
-					parent.DoScrolling(UIDirection.Vertical, -differenceBottom);
+					parent.DoScrolling(UIDirection.Vertical, -(differenceBottom + scrollPadding));
 
 			}
 			if (parent.CurrentLayout.OverflowX == Overflow.Scroll)
@@ -704,10 +705,10 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 				// If toBeSeen is above parent, scroll it down
 				if (differenceLeft > 0)
-					parent.DoScrolling(UIDirection.Horizontal, -differenceLeft);
+					parent.DoScrolling(UIDirection.Horizontal, -(differenceLeft + scrollPadding));
 				// Else, scroll it up
 				else if (differenceRight > 0)
-					parent.DoScrolling(UIDirection.Horizontal, differenceRight);
+					parent.DoScrolling(UIDirection.Horizontal, (differenceRight + scrollPadding));
 			}
 		}
 

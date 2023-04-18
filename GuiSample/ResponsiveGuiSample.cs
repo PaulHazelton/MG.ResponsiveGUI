@@ -24,6 +24,7 @@ public class ResponsiveGuiSample : Game
 	private RootGuiElement _body;
 	private RootGuiElement _title;
 	private RootGuiElement _about;
+	private RootGuiElement _grid;
 
 
 	public ResponsiveGuiSample()
@@ -76,7 +77,6 @@ public class ResponsiveGuiSample : Game
 			AlignItems = AlignItems.Center,
 
 			Width_ = "100%",
-			MaxWidth_ = "900px",
 
 			BorderColor = Color.White,
 			BorderThickness = 4,
@@ -94,11 +94,51 @@ public class ResponsiveGuiSample : Game
 		{
 			AlignItems = AlignItems.Center,
 			Width_ = "100%",
-			MaxHeight = 72 * 3 + 8 * 2 - 32,
+			MaxHeight = 72 * 4 + 8 * 3 - 32,
 			Gap = 8,
+			ScrollPadding = 56,
 			OverflowY = Overflow.Scroll,
 			AllowScrollingFromAnywhere = true,
 		};
+
+		var rowLayout = new Layout()
+		{
+			FlexDirection = FlexDirection.Row,
+			JustifyContent = JustifyContent.SpaceBetween,
+			Width_ = "100%",
+			Height = 280,
+			PaddingTop = 40,
+			PaddingBottom = 40,
+		};
+		var gridButtonLayout = new Layout()
+		{
+			ForegroundColor = Color.Lime,
+			BackgroundColor = new Color(0, 0, 0),
+			BorderColor = Color.Lime,
+			BorderThickness = 4,
+
+			FontScale = 8,
+
+			Width = 200,
+			Height_ = "100%",
+
+			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+		};
+		gridButtonLayout[ElementStates.Hovered] = new Layout(gridButtonLayout)
+		{
+			BackgroundColor = new Color(40, 40, 40),
+
+			Transform = Matrix.CreateScale(1.2f),
+			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+		};
+		gridButtonLayout[ElementStates.Activated] = new Layout(gridButtonLayout[ElementStates.Hovered])
+		{
+			BackgroundColor = Color.Lime,
+			ForegroundColor = Color.Black,
+			Transform = Matrix.Identity,
+			Transition = new Transition(0.1d, TimingFunction.EaseInOutCubic),
+		};
+
 		var buttonLayout = new Layout()
 		{
 			NineSlice = new NineSlice(itemFrame),
@@ -152,12 +192,14 @@ public class ResponsiveGuiSample : Game
 
 		_title = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
 		_about = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		_grid = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
 
 		_title
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Responsive GUI\nfor MonoGame"))
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
+					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
 					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
@@ -174,6 +216,37 @@ public class ResponsiveGuiSample : Game
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, null, "Button"))
+					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
+				)
+			)
+		;
+
+		_grid
+			.AddChild(new Container(menuFrameLayout)
+				.AddChild(new Label(headingLayout, "Grid Example"))
+				.AddChild(new DragScrollContainer(scrollingButtonContainer)
+					.AddChild(new Container(rowLayout)
+						.AddChild(new Button(gridButtonLayout, null, "1"))
+						.AddChild(new Button(gridButtonLayout, null, "2"))
+						.AddChild(new Button(gridButtonLayout, null, "3"))
+					)
+					.AddChild(new Container(rowLayout)
+						.AddChild(new Button(gridButtonLayout, null, "4"))
+						.AddChild(new Button(gridButtonLayout, null, "5"))
+						.AddChild(new Button(gridButtonLayout, null, "6"))
+					)
+					.AddChild(new Container(rowLayout)
+						.AddChild(new Button(gridButtonLayout, null, "7"))
+						.AddChild(new Button(gridButtonLayout, null, "8"))
+						.AddChild(new Button(gridButtonLayout, null, "9"))
+					)
+					.AddChild(new Container(rowLayout)
+						.AddChild(new Button(gridButtonLayout, null, "10"))
+						.AddChild(new Button(gridButtonLayout, null, "11"))
+						.AddChild(new Button(gridButtonLayout, null, "12"))
+					)
+				)
+				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)
@@ -279,6 +352,7 @@ public class ResponsiveGuiSample : Game
 
 		_title.UpdateScreenSize(w, h);
 		_about.UpdateScreenSize(w, h);
+		_grid.UpdateScreenSize(w, h);
 	}
 
 	private bool WasPressed(Keys key) => (_newKeyState.IsKeyDown(key) && _oldKeyState.IsKeyUp(key));

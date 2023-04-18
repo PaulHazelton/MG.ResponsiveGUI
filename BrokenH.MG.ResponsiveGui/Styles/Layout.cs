@@ -58,10 +58,12 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		internal float _paddingTop;
 		internal float _paddingBottom;
 
-		internal float _borderThicknessLeft { get; set; }
-		internal float _borderThicknessRight { get; set; }
-		internal float _borderThicknessTop { get; set; }
-		internal float _borderThicknessBottom { get; set; }
+		internal float _borderThicknessLeft;
+		internal float _borderThicknessRight;
+		internal float _borderThicknessTop;
+		internal float _borderThicknessBottom;
+
+		internal float _scrollPadding;
 
 		#endregion
 
@@ -129,6 +131,8 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		public float BorderThicknessRight { get => _borderThicknessRight * Layout.UIScale; set => _borderThicknessRight = value; }
 		public float BorderThicknessTop { get => _borderThicknessTop * Layout.UIScale; set => _borderThicknessTop = value; }
 		public float BorderThicknessBottom { get => _borderThicknessBottom * Layout.UIScale; set => _borderThicknessBottom = value; }
+
+		public float ScrollPadding { get => _scrollPadding * UIScale; set => _scrollPadding = value; }
 
 		public LayoutUnit LeftUnit { get; set; } = LayoutUnit.Pixels;
 		public LayoutUnit RightUnit { get; set; } = LayoutUnit.Pixels;
