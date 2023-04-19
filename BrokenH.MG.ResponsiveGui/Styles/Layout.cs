@@ -363,8 +363,8 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 
 		#region Convenient Getters
 
-		internal bool RequiresComplicatedDrawEver
-			=> this.RequiresComplicatedDraw || SubLayouts.Any(sl => sl.Value.RequiresComplicatedDrawEver);
+		// internal bool RequiresComplicatedDrawEver
+		// 	=> this.RequiresComplicatedDraw || SubLayouts.Any(sl => sl.Value.RequiresComplicatedDrawEver);
 
 		internal bool RequiresComplicatedDraw
 			=> OverflowX != Overflow.Visible

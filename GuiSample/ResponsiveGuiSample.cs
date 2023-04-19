@@ -322,14 +322,14 @@ public class ResponsiveGuiSample : Game
 	{
 		GraphicsDevice.Clear(Color.Black);
 
-		var menuTexture =_body.Draw(_spriteBatch, SamplerState.PointClamp);
+		// var menuTexture =_body.Draw(_spriteBatch, SamplerState.PointClamp);
 
 		_spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.AlphaBlend,
-			samplerState: null
+			samplerState: SamplerState.PointClamp
 		);
-		_spriteBatch.Draw(menuTexture, Vector2.Zero, Color.White);
+		_body.Draw(_spriteBatch, SamplerState.PointClamp);
 		_spriteBatch.End();
 
 		base.Draw(gameTime);

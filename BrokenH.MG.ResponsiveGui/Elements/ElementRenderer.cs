@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Styles;
@@ -15,7 +14,7 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 		// Private
 		private RootGuiElement _rootElement;
-		private List<RenderTarget2D> RenderTargets;
+		// private List<RenderTarget2D> RenderTargets;
 
 		private int ScreenWidth { get; set; }
 		private int ScreenHeight { get; set; }
@@ -25,15 +24,15 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 		private UIPrimativeDrawer _uIPrimativeDrawer;
 
 		// Internal
-		internal void AddRenderTarget() => RenderTargets.Add(new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents));
+		// internal void AddRenderTarget() => RenderTargets.Add(new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents));
 
 		public void UpdateScreenSize(int screenWidth, int screenHeight)
 		{
 			ScreenWidth = screenWidth;
 			ScreenHeight = screenHeight;
 
-			for (int i = 0; i < RenderTargets.Count; i++)
-				RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+			// for (int i = 0; i < RenderTargets.Count; i++)
+			// 	RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 		}
 
 
@@ -45,82 +44,74 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			_rootElement = rootElement;
 
 			_uIPrimativeDrawer = new UIPrimativeDrawer(graphicsDevice);
-			RenderTargets = new List<RenderTarget2D>();
+			// RenderTargets = new List<RenderTarget2D>();
 		}
 
-		public Texture2D Draw(SpriteBatch spriteBatch, SamplerState? samplerState)
-		{
-			int rtCount = _rootElement.CountIf(e => e.Layout.RequiresComplicatedDrawEver) + 1;
-			int currCount = RenderTargets.Count;
-			if (rtCount > currCount)
-			{
-				for (int i = 0; i <= rtCount - currCount; i++)
-					AddRenderTarget();
-			}
-
-			var previousRTs = GraphicsDevice.GetRenderTargets();
-			GraphicsDevice.SetRenderTarget(RenderTargets[0]);
-			GraphicsDevice.Clear(Color.Transparent);
-			spriteBatch.Begin(
-				sortMode: SpriteSortMode.Deferred,
-				blendState: BlendState.NonPremultiplied,
-				samplerState: samplerState,
-				transformMatrix: null
-			);
-			Draw2(spriteBatch, _rootElement, 1, samplerState);
-			spriteBatch.End();
-			GraphicsDevice.SetRenderTargets(previousRTs);
-
-			return RenderTargets[0];
-		}
-		private void Draw2(SpriteBatch spriteBatch, GuiElement e, int rtCount, SamplerState? samplerState)
+		public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState) => Draw(spriteBatch, _rootElement, Matrix.Identity, new Rectangle(0, 0, ScreenWidth, ScreenHeight));
+		private void Draw(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
 		{
 			// Simple draw
-			if (!e.CurrentLayout.RequiresComplicatedDraw)
+			if (!e.CurrentLayout.RequiresComplicatedDraw || GraphicsDevice == null)
 			{
 				DrawThisElement(spriteBatch, e);
-				DrawChildren(spriteBatch, e, rtCount, samplerState);
+				DrawChildren(spriteBatch, e, previousTransform, previousClipping);
 				return;
 			}
 
-			// Pause previous spriteBatch
+			// Stop previous spriteBatch call
 			spriteBatch.End();
 
-			var previousRenderTargets = GraphicsDevice.GetRenderTargets();
-			GraphicsDevice.SetRenderTarget(RenderTargets[rtCount]);
-			GraphicsDevice.Clear(Color.Transparent);
-			rtCount++;
+			// Store previous spritebatch states
+			var previousRaster = GraphicsDevice.RasterizerState;
+			// Accumulate transforms
+			var nextTransform = previousTransform * (e._currentTransform ?? Matrix.Identity);
+			// Transform clipping rectangle
+			var currentClipping = TransformRectangle(GetClippingRectangle(e), nextTransform);
+			// Accumulate clippings
+			var nextClipping = Rectangle.Intersect(previousClipping, currentClipping);
+
+			var rasterState = new RasterizerState()
+			{
+				ScissorTestEnable = true,
+			};
+
 			spriteBatch.Begin(
 				sortMode: SpriteSortMode.Deferred,
 				blendState: BlendState.NonPremultiplied,
-				samplerState: samplerState,
-				transformMatrix: null
+				samplerState: SamplerState.PointClamp,
+				rasterizerState: rasterState,
+				transformMatrix: nextTransform
 			);
-			DrawChildren(spriteBatch, e, rtCount, samplerState);
-			spriteBatch.End();
-			GraphicsDevice.SetRenderTargets(previousRenderTargets);
-			rtCount--;
 
-
-			spriteBatch.Begin(
-				sortMode: SpriteSortMode.Deferred,
-				blendState: BlendState.AlphaBlend,
-				samplerState: samplerState,
-				transformMatrix: e._currentTransform
-			);
 			DrawThisElement(spriteBatch, e);
-			var clippingRectangle = GetClippingRectangle(e);
-			spriteBatch.Draw(RenderTargets[rtCount], clippingRectangle, clippingRectangle, Color.White);
 			spriteBatch.End();
-
-
-			// Return spriteBatch to previous state
+			GraphicsDevice.ScissorRectangle = nextClipping;
 			spriteBatch.Begin(
 				sortMode: SpriteSortMode.Deferred,
 				blendState: BlendState.NonPremultiplied,
-				samplerState: samplerState,
-				transformMatrix: null
+				samplerState: SamplerState.PointClamp,
+				rasterizerState: rasterState,
+				transformMatrix: nextTransform
 			);
+			DrawChildren(spriteBatch, e, nextTransform, nextClipping);
+
+			spriteBatch.End();
+
+			// Return to previous state
+			GraphicsDevice.ScissorRectangle = previousClipping;
+			spriteBatch.Begin(
+				sortMode: SpriteSortMode.Deferred,
+				blendState: BlendState.NonPremultiplied,
+				samplerState: SamplerState.PointClamp,
+				rasterizerState: previousRaster,
+				transformMatrix: previousTransform
+			);
+		}
+		private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
+		{
+			// Draw children
+			foreach (var child in e._children)
+				Draw(spriteBatch, child, previousTransform, previousClipping);
 		}
 
 		private void DrawThisElement(SpriteBatch spriteBatch, GuiElement e)
@@ -197,79 +188,94 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 				_uIPrimativeDrawer.DrawRectangleOutline(spriteBatch, e.InnerRectangle, DebugInnerColor, 1, 0.5f);
 			}
 		}
-		private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, int rtCount, SamplerState? samplerState)
-		{
-			// Draw children
-			foreach (var child in e._children)
-				Draw2(spriteBatch, child, rtCount, samplerState);
-		}
 
 		[System.Obsolete]
-		private void Draw(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
+		private Texture2D DrawUsingRenderTargets(SpriteBatch spriteBatch, SamplerState? samplerState)
 		{
+			/*
+			int rtCount = _rootElement.CountIf(e => e.Layout.RequiresComplicatedDrawEver) + 1;
+			int currCount = RenderTargets.Count;
+			if (rtCount > currCount)
+			{
+				for (int i = 0; i <= rtCount - currCount; i++)
+					AddRenderTarget();
+			}
+
+			var previousRTs = GraphicsDevice.GetRenderTargets();
+			GraphicsDevice.SetRenderTarget(RenderTargets[0]);
+			GraphicsDevice.Clear(Color.Transparent);
+			spriteBatch.Begin(
+				sortMode: SpriteSortMode.Deferred,
+				blendState: BlendState.NonPremultiplied,
+				samplerState: samplerState,
+				transformMatrix: null
+			);
+			DrawWithRenderTargetsHelper(spriteBatch, _rootElement, 1, samplerState);
+			spriteBatch.End();
+			GraphicsDevice.SetRenderTargets(previousRTs);
+
+			return RenderTargets[0];
+			*/
+			return new Texture2D(null, 0, 0);
+		}
+		[System.Obsolete]
+		private void DrawWithRenderTargetsHelper(SpriteBatch spriteBatch, GuiElement e, int rtCount, SamplerState? samplerState)
+		{
+			/*
 			// Simple draw
-			if (!e.CurrentLayout.RequiresComplicatedDraw || GraphicsDevice == null)
+			if (!e.CurrentLayout.RequiresComplicatedDraw)
 			{
 				DrawThisElement(spriteBatch, e);
-				DrawChildren(spriteBatch, e, previousTransform, previousClipping);
+				DrawChildren(spriteBatch, e, rtCount, samplerState);
 				return;
 			}
 
-			// Stop previous spriteBatch call
+			// Pause previous spriteBatch
 			spriteBatch.End();
 
-			// Store previous spritebatch states
-			var previousRaster = GraphicsDevice.RasterizerState;
-			// Accumulate transforms
-			var nextTransform = previousTransform * (e._currentTransform ?? Matrix.Identity);
-			// Transform clipping rectangle
-			var currentClipping = TransformRectangle(GetClippingRectangle(e), nextTransform);
-			// Accumulate clippings
-			var nextClipping = Rectangle.Intersect(previousClipping, currentClipping);
-
-			var rasterState = new RasterizerState()
-			{
-				ScissorTestEnable = true,
-			};
-
+			var previousRenderTargets = GraphicsDevice.GetRenderTargets();
+			GraphicsDevice.SetRenderTarget(RenderTargets[rtCount]);
+			GraphicsDevice.Clear(Color.Transparent);
+			rtCount++;
 			spriteBatch.Begin(
 				sortMode: SpriteSortMode.Deferred,
 				blendState: BlendState.NonPremultiplied,
-				samplerState: SamplerState.PointClamp,
-				rasterizerState: rasterState,
-				transformMatrix: nextTransform
+				samplerState: samplerState,
+				transformMatrix: null
 			);
+			DrawChildren(spriteBatch, e, rtCount, samplerState);
+			spriteBatch.End();
+			GraphicsDevice.SetRenderTargets(previousRenderTargets);
+			rtCount--;
 
+
+			spriteBatch.Begin(
+				sortMode: SpriteSortMode.Deferred,
+				blendState: BlendState.AlphaBlend,
+				samplerState: samplerState,
+				transformMatrix: e._currentTransform
+			);
 			DrawThisElement(spriteBatch, e);
+			var clippingRectangle = GetClippingRectangle(e);
+			spriteBatch.Draw(RenderTargets[rtCount], clippingRectangle, clippingRectangle, Color.White);
 			spriteBatch.End();
-			GraphicsDevice.ScissorRectangle = nextClipping;
+
+
+			// Return spriteBatch to previous state
 			spriteBatch.Begin(
 				sortMode: SpriteSortMode.Deferred,
 				blendState: BlendState.NonPremultiplied,
-				samplerState: SamplerState.PointClamp,
-				rasterizerState: rasterState,
-				transformMatrix: nextTransform
+				samplerState: samplerState,
+				transformMatrix: null
 			);
-			DrawChildren(spriteBatch, e, nextTransform, nextClipping);
 
-			spriteBatch.End();
-
-			// Return to previous state
-			GraphicsDevice.ScissorRectangle = previousClipping;
-			spriteBatch.Begin(
-				sortMode: SpriteSortMode.Deferred,
-				blendState: BlendState.NonPremultiplied,
-				samplerState: SamplerState.PointClamp,
-				rasterizerState: previousRaster,
-				transformMatrix: previousTransform
-			);
-		}
-		[System.Obsolete]
-		private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
-		{
-			// Draw children
-			foreach (var child in e._children)
-				Draw(spriteBatch, child, previousTransform, previousClipping);
+			void DrawChildren(SpriteBatch spriteBatch, GuiElement e, int rtCount, SamplerState? samplerState)
+			{
+				// Draw children
+				foreach (var child in e._children)
+					DrawWithRenderTargetsHelper(spriteBatch, child, rtCount, samplerState);
+			}
+			*/
 		}
 
 		// Helper functions
