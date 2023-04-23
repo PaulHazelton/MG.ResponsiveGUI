@@ -1,13 +1,12 @@
-namespace BrokenH.MG.ResponsiveGui.Styles
+namespace BrokenH.MG.ResponsiveGui.Styles;
+
+public enum TimingFunction
 {
-	public enum TimingFunction
-	{
-		Linear,
-		SmoothStep,
-		EaseInCubic,
-		EaseOutCubic,
-		EaseInOutSine,
-		EaseInOutCubic,
-		Custom,
-	}
+	Linear,
+	SmoothStep,
+	EaseInCubic,
+	EaseOutCubic,
+	EaseInOutSine,
+	EaseInOutCubic,
+	Custom,
 }

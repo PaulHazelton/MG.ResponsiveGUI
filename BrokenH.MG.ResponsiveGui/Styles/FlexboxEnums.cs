@@ -1,42 +1,41 @@
 using Microsoft.Xna.Framework;
 
-namespace BrokenH.MG.ResponsiveGui.Styles
+namespace BrokenH.MG.ResponsiveGui.Styles;
+
+public enum FlexDirection
 {
-	public enum FlexDirection
-	{
-		Column,
-		Row,
-	}
+	Column,
+	Row,
+}
 
-	public enum JustifyContent
-	{
-		FlexStart,
-		FlexEnd,
-		Center,
-		SpaceBetween
-	}
+public enum JustifyContent
+{
+	FlexStart,
+	FlexEnd,
+	Center,
+	SpaceBetween
+}
 
-	public enum AlignItems
-	{
-		FlexStart,
-		Center,
-		FlexEnd,
-	}
+public enum AlignItems
+{
+	FlexStart,
+	Center,
+	FlexEnd,
+}
 
-	internal static class FlexboxExtensions
+internal static class FlexboxExtensions
+{
+	internal static bool IsParallelWith(this FlexDirection flexDirection, UIDirection d) => d switch
 	{
-		internal static bool IsParallelWith(this FlexDirection flexDirection, UIDirection d) => d switch
-		{
-			UIDirection.Horizontal => flexDirection == FlexDirection.Row,
-			UIDirection.Vertical => flexDirection == FlexDirection.Column,
-			_ => false,
-		};
+		UIDirection.Horizontal => flexDirection == FlexDirection.Row,
+		UIDirection.Vertical => flexDirection == FlexDirection.Column,
+		_ => false,
+	};
 
-		internal static float RelaventCoordinate(this Vector2 v, FlexDirection d) => d switch
-		{
-			FlexDirection.Row => v.X,
-			FlexDirection.Column => v.Y,
-			_ => 0,
-		};
-	}
+	internal static float RelaventCoordinate(this Vector2 v, FlexDirection d) => d switch
+	{
+		FlexDirection.Row => v.X,
+		FlexDirection.Column => v.Y,
+		_ => 0,
+	};
 }

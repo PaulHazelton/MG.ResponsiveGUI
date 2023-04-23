@@ -1,8 +1,7 @@
-namespace BrokenH.MG.ResponsiveGui.Styles
+namespace BrokenH.MG.ResponsiveGui.Styles;
+
+public enum LayoutUnit
 {
-	public enum LayoutUnit
-	{
-		Pixels,
-		Percent,
-	}
+	Pixels,
+	Percent,
 }
