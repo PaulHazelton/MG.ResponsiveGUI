@@ -114,6 +114,5 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			_elementRenderer.UpdateScreenSize(screenWidth, screenHeight);
 			GuiElement.UpdateSize(screenWidth, screenHeight);
 		}
-		// internal void AddRenderTarget() => _elementRenderer.AddRenderTarget();
 	}
 }

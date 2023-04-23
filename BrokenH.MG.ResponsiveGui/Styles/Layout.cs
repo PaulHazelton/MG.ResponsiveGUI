@@ -250,6 +250,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 
 			SubLayouts = copySublayouts ? toCopy.SubLayouts.ToDictionary(kvp => kvp.Key, kvp => new Layout(kvp.Value, false)) : new();
 		}
+
 		public Layout Copy() => new Layout(this);
 
 		#region Additional Setters
@@ -364,9 +365,6 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 		#endregion
 
 		#region Convenient Getters
-
-		// internal bool RequiresComplicatedDrawEver
-		// 	=> this.RequiresComplicatedDraw || SubLayouts.Any(sl => sl.Value.RequiresComplicatedDrawEver);
 
 		internal bool RequiresComplicatedDraw
 			=> OverflowX != Overflow.Visible
