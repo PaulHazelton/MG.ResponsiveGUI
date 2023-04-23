@@ -13,6 +13,24 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Click_Back.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Click_Back.wav
+
+#begin Click_Enter.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Click_Enter.wav
+
+#begin Hover_LowBeep.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Hover_LowBeep.wav
+
 #begin MenuItemFrame.json
 /copy:MenuItemFrame.json
 
@@ -35,6 +53,14 @@
 /processorParam:TextureFormat=Compressed
 /build:NormalFont.spritefont
 
+#begin pixelFont.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:pixelFont.bmp
+
 #begin TitleFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -42,10 +68,3 @@
 /processorParam:TextureFormat=Compressed
 /build:TitleFont.spritefont
 
-#begin UserInterface/Fonts/pixelFont.bmp
-/importer:TextureImporter
-/processor:FontTextureProcessor
-/processorParam:FirstCharacter= 
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:pixelFont.bmp
