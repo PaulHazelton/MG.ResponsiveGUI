@@ -1,9 +1,8 @@
-namespace BrokenH.MG.ResponsiveGui.Styles
+namespace BrokenH.MG.ResponsiveGui.Styles;
+
+public enum Overflow
 {
-	public enum Overflow
-	{
-		Visible,
-		Hidden,
-		Scroll,
-	}
+	Visible,
+	Hidden,
+	Scroll,
 }

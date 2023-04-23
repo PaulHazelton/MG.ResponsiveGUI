@@ -1,9 +1,8 @@
-namespace BrokenH.MG.ResponsiveGui.Styles
+namespace BrokenH.MG.ResponsiveGui.Styles;
+
+public enum WordWrapMode
 {
-	public enum WordWrapMode
-	{
-		None,
-		WordWrap,
-		BreakWord,
-	}
+	None,
+	WordWrap,
+	BreakWord,
 }
