@@ -14,7 +14,6 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 		// Private
 		private RootGuiElement _rootElement;
-		// private List<RenderTarget2D> RenderTargets;
 
 		private int ScreenWidth { get; set; }
 		private int ScreenHeight { get; set; }
@@ -23,19 +22,8 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 		private UIPrimativeDrawer _uIPrimativeDrawer;
 
-		// Internal
-		// internal void AddRenderTarget() => RenderTargets.Add(new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents));
 
-		public void UpdateScreenSize(int screenWidth, int screenHeight)
-		{
-			ScreenWidth = screenWidth;
-			ScreenHeight = screenHeight;
-
-			// for (int i = 0; i < RenderTargets.Count; i++)
-			// 	RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-		}
-
-
+		// Constructor
 		public ElementRenderer(GraphicsDevice graphicsDevice, int screenWidth, int screenHeight, RootGuiElement rootElement)
 		{
 			GraphicsDevice = graphicsDevice;
@@ -45,6 +33,15 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 
 			_uIPrimativeDrawer = new UIPrimativeDrawer(graphicsDevice);
 			// RenderTargets = new List<RenderTarget2D>();
+		}
+
+		public void UpdateScreenSize(int screenWidth, int screenHeight)
+		{
+			ScreenWidth = screenWidth;
+			ScreenHeight = screenHeight;
+
+			// for (int i = 0; i < RenderTargets.Count; i++)
+			// 	RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 		}
 
 		public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState) => Draw(spriteBatch, _rootElement, Matrix.Identity, new Rectangle(0, 0, ScreenWidth, ScreenHeight));
@@ -107,13 +104,6 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 				transformMatrix: previousTransform
 			);
 		}
-		private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
-		{
-			// Draw children
-			foreach (var child in e._children)
-				Draw(spriteBatch, child, previousTransform, previousClipping);
-		}
-
 		private void DrawThisElement(SpriteBatch spriteBatch, GuiElement e)
 		{
 			// Draw Background
@@ -188,7 +178,15 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 				_uIPrimativeDrawer.DrawRectangleOutline(spriteBatch, e.InnerRectangle, DebugInnerColor, 1, 0.5f);
 			}
 		}
+		private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
+		{
+			// Draw children
+			foreach (var child in e._children)
+				Draw(spriteBatch, child, previousTransform, previousClipping);
+		}
 
+		// private List<RenderTarget2D> RenderTargets;
+		// internal void AddRenderTarget() => RenderTargets.Add(new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents));
 		[System.Obsolete]
 		private Texture2D DrawUsingRenderTargets(SpriteBatch spriteBatch, SamplerState? samplerState)
 		{
