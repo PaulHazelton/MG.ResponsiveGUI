@@ -201,6 +201,8 @@ namespace BrokenH.MG.ResponsiveGui.Styles
 			_borderThicknessTop = toCopy._borderThicknessTop;
 			_borderThicknessBottom = toCopy._borderThicknessBottom;
 
+			_scrollPadding = toCopy._scrollPadding;
+
 			BorderColorLeft = toCopy.BorderColorLeft;
 			BorderColorRight = toCopy.BorderColorRight;
 			BorderColorTop = toCopy.BorderColorTop;
