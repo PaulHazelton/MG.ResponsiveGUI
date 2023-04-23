@@ -34,7 +34,7 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 		}
 
 		// Game Loop
-		public Texture2D Draw(SpriteBatch spriteBatch, SamplerState? samplerState = null) => _elementRenderer.Draw(spriteBatch, samplerState);
+		public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState = null) => _elementRenderer.Draw(spriteBatch, samplerState);
 		public void Update(GameTime gameTime)
 		{
 			var mouse = Mouse.GetState().Position;
@@ -114,6 +114,5 @@ namespace BrokenH.MG.ResponsiveGui.Elements
 			_elementRenderer.UpdateScreenSize(screenWidth, screenHeight);
 			GuiElement.UpdateSize(screenWidth, screenHeight);
 		}
-		internal void AddRenderTarget() => _elementRenderer.AddRenderTarget();
 	}
 }

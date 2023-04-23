@@ -94,7 +94,7 @@ public class ResponsiveGuiSample : Game
 		{
 			AlignItems = AlignItems.Center,
 			Width_ = "100%",
-			MaxHeight = 72 * 4 + 8 * 3 - 32,
+			MaxHeight = 488,
 			Gap = 8,
 			ScrollPadding = 56,
 			OverflowY = Overflow.Scroll,
@@ -107,20 +107,19 @@ public class ResponsiveGuiSample : Game
 			JustifyContent = JustifyContent.SpaceBetween,
 			Width_ = "100%",
 			Height = 280,
-			PaddingTop = 40,
-			PaddingBottom = 40,
+			Padding = 40
 		};
 		var gridButtonLayout = new Layout()
 		{
-			ForegroundColor = Color.Lime,
+			ForegroundColor = Color.Cyan,
 			BackgroundColor = new Color(0, 0, 0),
-			BorderColor = Color.Lime,
+			BorderColor = Color.Cyan,
 			BorderThickness = 4,
 
 			FontScale = 8,
 
 			Width = 200,
-			Height_ = "100%",
+			Height = 200,
 
 			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
 		};
@@ -133,7 +132,7 @@ public class ResponsiveGuiSample : Game
 		};
 		gridButtonLayout[ElementStates.Activated] = new Layout(gridButtonLayout[ElementStates.Hovered])
 		{
-			BackgroundColor = Color.Lime,
+			BackgroundColor = Color.Cyan,
 			ForegroundColor = Color.Black,
 			Transform = Matrix.Identity,
 			Transition = new Transition(0.1d, TimingFunction.EaseInOutCubic),
@@ -258,9 +257,6 @@ public class ResponsiveGuiSample : Game
 
 	protected override void Update(GameTime gameTime)
 	{
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-			Exit();
-
 		HandleInput();
 
 		_body.Update(gameTime);
@@ -273,14 +269,24 @@ public class ResponsiveGuiSample : Game
 		_newKeyState = Keyboard.GetState();
 		_newMouseState = Mouse.GetState();
 
-		var focused = _body.FocusedElement;
-		if (focused != null)
+		// Escape key
+		if (WasPressed(Keys.Escape))
 		{
-			if (WasPressed(Keys.Enter))
-				focused?.ActivatePress();
-			else if (WasReleased(Keys.Enter))
-				focused?.ActivateRelease();
+			if (_body == _title)
+			{
+				Exit();
+				return;
+			}
+			else
+				SwitchBody(_title);
 		}
+
+		// Changing focus and activating elements (hitting the arrow keys and enter) to interact with the GUI via keyboard
+		// The process can also work with a gamepad
+		if (WasPressed(Keys.Enter))
+			_body.FocusedElement?.ActivatePress();
+		else if (WasReleased(Keys.Enter))
+			_body.FocusedElement?.ActivateRelease();
 
 		if (WasPressed(Keys.Left))
 			_body.ChangeFocusLeft();
@@ -322,14 +328,14 @@ public class ResponsiveGuiSample : Game
 	{
 		GraphicsDevice.Clear(Color.Black);
 
-		var menuTexture =_body.Draw(_spriteBatch, SamplerState.PointClamp);
+		// var menuTexture =_body.Draw(_spriteBatch, SamplerState.PointClamp);
 
 		_spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.AlphaBlend,
-			samplerState: null
+			samplerState: SamplerState.PointClamp
 		);
-		_spriteBatch.Draw(menuTexture, Vector2.Zero, Color.White);
+		_body.Draw(_spriteBatch, SamplerState.PointClamp);
 		_spriteBatch.End();
 
 		base.Draw(gameTime);
