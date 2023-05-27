@@ -3,6 +3,7 @@ using System.Text.Json;
 using BrokenH.MG.ResponsiveGui.Elements;
 using BrokenH.MG.ResponsiveGui.Styles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -14,6 +15,7 @@ public class ResponsiveGuiSample : Game
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
+	// Input
 	private KeyboardState _newKeyState;
 	private KeyboardState _oldKeyState;
 
@@ -37,8 +39,9 @@ public class ResponsiveGuiSample : Game
 		Window.AllowUserResizing = true;
 		Window.ClientSizeChanged += (sender, e) => WindowSizeChanged();
 		Content.RootDirectory = "Content";
-		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 144.0d);
+		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 60.0d);
 		IsMouseVisible = true;
+		SoundEffect.MasterVolume = 0.6f;
 	}
 	protected override void Initialize()
 	{
@@ -53,11 +56,18 @@ public class ResponsiveGuiSample : Game
 			+ " Think again, buddy. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, buddy."
 		;
 
+		// Load content
 		var font = Content.Load<SpriteFont>("pixelFont");
 		Layout.Initialize(font);
 
 		var itemFrame = new NineSliceAsset(Content.Load<Texture2D>("MenuItemFrame"), LoadJson<NineSliceSpec>("MenuItemFrame.json"));
 
+		// Sound effects
+		var hoverSound = Content.Load<SoundEffect>("Hover");
+		var backSound = Content.Load<SoundEffect>("Click_Back");
+		var forwardSound = Content.Load<SoundEffect>("Click_Enter");
+
+		// Set up layout (like css)
 		// var darkGray = new Color(40, 40, 40);
 		var darkGray = Color.DarkSlateGray;
 
@@ -147,6 +157,8 @@ public class ResponsiveGuiSample : Game
 			Width_ = "80%",
 			Height = 72,
 			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+			ActivateSound = forwardSound,
+			HoverSound = hoverSound
 		};
 		buttonLayout[ElementStates.Hovered] = new Layout(buttonLayout)
 		{
@@ -158,6 +170,11 @@ public class ResponsiveGuiSample : Game
 			BackgroundColor = Color.White,
 			ForegroundColor = Color.Black,
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
+		};
+
+		var backButtonLayout = new Layout(buttonLayout)
+		{
+			ActivateSound = backSound
 		};
 
 		var textScrollBox = new Layout()
@@ -189,6 +206,7 @@ public class ResponsiveGuiSample : Game
 			WordWrapMode = WordWrapMode.WordWrap,
 		};
 
+		// Build element tree (like html)
 		_title = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
 		_about = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
 		_grid = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
@@ -202,7 +220,7 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
-					.AddChild(new Button(buttonLayout, Exit, "Quit"))
+					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
 				)
 			)
 		;
@@ -215,7 +233,7 @@ public class ResponsiveGuiSample : Game
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, null, "Button"))
-					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
+					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)
 		;
@@ -246,7 +264,7 @@ public class ResponsiveGuiSample : Game
 					)
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
-					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
+					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)
 		;

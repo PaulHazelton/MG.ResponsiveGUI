@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Elements;
+using Microsoft.Xna.Framework.Audio;
 
 namespace BrokenH.MG.ResponsiveGui.Styles;
 
@@ -69,8 +70,11 @@ public class Layout
 
 	#region Main Layout Properties
 
+	public SoundEffect? ActivateSound { get; set; }
+	public SoundEffect? HoverSound { get; set; }
+
 	public Transition? Transition { get; set; }
-	public Animation? Animation { get; set; }
+	public GuiAnimation? Animation { get; set; }
 	public Matrix Transform { get; set; } = Matrix.Identity;
 
 	public Color BackgroundColor { get; set; } = Color.Transparent;
@@ -166,6 +170,9 @@ public class Layout
 	public Layout(Layout toCopy) : this(toCopy, true) { }
 	private Layout(Layout toCopy, bool copySublayouts)
 	{
+		ActivateSound = toCopy.ActivateSound;
+		HoverSound = toCopy.HoverSound;
+
 		if (toCopy.Transition != null)
 			Transition = new Transition(toCopy.Transition);
 
