@@ -220,6 +220,8 @@ public class ResponsiveGuiSample : Game
 			ForegroundColor = Color.White,
 			FontScale = 6,
 			Width_ = "35%",
+			PaddingLeft = 20,
+			TextAlign = TextAlign.Left,
 		};
 		var formControl = new Layout()
 		{
@@ -243,8 +245,6 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
 					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
-					.AddChild(new Button(buttonLayout, null, "Button"))
-					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
 				)
 			)
@@ -266,6 +266,7 @@ public class ResponsiveGuiSample : Game
 		;
 		#endregion
 
+		#region Settings
 		_settings
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Settings"))
@@ -278,7 +279,9 @@ public class ResponsiveGuiSample : Game
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 			)
 		;
+		#endregion
 
+		#region Grid
 		_grid
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Grid Example"))
@@ -309,6 +312,7 @@ public class ResponsiveGuiSample : Game
 				)
 			)
 		;
+		#endregion
 
 		_body = _title;
 		WindowSizeChanged();
