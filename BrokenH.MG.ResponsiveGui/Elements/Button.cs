@@ -23,9 +23,9 @@ public class Button : Label
 	protected override void OnMouseEvent(byte button, ButtonState state)
 	{
 		if (button == PrimaryClick && state == ButtonState.Released && State == ElementStates.Activated)
-			OnActivateRelease();
+			ActivateRelease();
 		if (button == PrimaryClick && state == ButtonState.Pressed && State == ElementStates.Hovered)
-			OnActivatePress();
+			ActivatePress();
 	}
 
 	protected override void OnActivatePress()

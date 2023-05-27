@@ -25,6 +25,12 @@
 /processorParam:Quality=Best
 /build:Click_Enter.wav
 
+#begin Hover.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Hover.wav
+
 #begin Hover_LowBeep.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

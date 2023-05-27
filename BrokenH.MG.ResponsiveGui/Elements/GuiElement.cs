@@ -228,6 +228,7 @@ public abstract class GuiElement : IDisposable
 
 	// State
 	private string _state = ElementStates.Neutral;
+	private string _oldState = ElementStates.Neutral;
 	public string State
 	{
 		get => _state;
@@ -236,8 +237,9 @@ public abstract class GuiElement : IDisposable
 			if (_state != value)
 			{
 				_oldLayout = _currentLayout;
+				_oldState = _state;
 				_state = value;
-				OnStateChange();
+				StateChange();
 			}
 		}
 	}
@@ -502,8 +504,15 @@ public abstract class GuiElement : IDisposable
 		return consumed;
 	}
 
-	public void ActivatePress() => OnActivatePress();
-	public void ActivateRelease() => OnActivateRelease();
+	public void ActivatePress()
+	{
+		CurrentLayout.ActivateSound?.Play();
+ 		OnActivatePress();
+	}
+	public void ActivateRelease()
+	{
+ 		OnActivateRelease();
+	}
 
 	// Element tree functions
 	public void ToAll(Action<GuiElement> action)
@@ -1001,6 +1010,14 @@ public abstract class GuiElement : IDisposable
 	#endregion
 
 	#region Hooks
+
+	// Just before the hook
+	private void StateChange()
+	{
+		if (State == ElementStates.Hovered && _oldState != ElementStates.Activated)
+			CurrentLayout.HoverSound?.Play();
+		OnStateChange();
+	}
 
 	// OnDraw should be protected, but also accessable from the ElementRenderer class
 	internal void NotifyDraw(SpriteBatch spriteBatch) => OnDraw(spriteBatch);
