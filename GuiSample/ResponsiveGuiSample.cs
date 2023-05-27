@@ -220,7 +220,7 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
-					.AddChild(new Button(buttonLayout, Exit, "Quit"))
+					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
 				)
 			)
 		;
@@ -233,7 +233,7 @@ public class ResponsiveGuiSample : Game
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, null, "Button"))
-					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
+					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)
 		;
@@ -264,7 +264,7 @@ public class ResponsiveGuiSample : Game
 					)
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
-					.AddChild(new Button(buttonLayout, () => SwitchBody(_title), "Back"))
+					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)
 		;

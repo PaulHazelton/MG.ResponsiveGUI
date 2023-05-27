@@ -506,7 +506,7 @@ public abstract class GuiElement : IDisposable
 
 	public void ActivatePress()
 	{
-		CurrentLayout.ActivateSound?.Play();
+		Layout.ActivateSound?.Play();
  		OnActivatePress();
 	}
 	public void ActivateRelease()
@@ -1015,7 +1015,7 @@ public abstract class GuiElement : IDisposable
 	private void StateChange()
 	{
 		if (State == ElementStates.Hovered && _oldState != ElementStates.Activated)
-			CurrentLayout.HoverSound?.Play();
+			Layout.HoverSound?.Play();
 		OnStateChange();
 	}
 
