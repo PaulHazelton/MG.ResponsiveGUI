@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace BrokenH.MG.ResponsiveGui.Elements;
+namespace BrokenH.MG.ResponsiveGui.Rendering;
 
 internal class UIPrimativeDrawer
 {

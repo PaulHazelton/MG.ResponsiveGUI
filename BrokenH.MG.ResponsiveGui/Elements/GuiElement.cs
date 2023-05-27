@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using BrokenH.MG.ResponsiveGui.Styles;
+using BrokenH.MG.ResponsiveGui.Common;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 

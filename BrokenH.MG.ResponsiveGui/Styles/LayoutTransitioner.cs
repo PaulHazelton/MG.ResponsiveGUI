@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
-using BrokenH.MG.ResponsiveGui.Elements;
+using BrokenH.MG.ResponsiveGui.Common;
 
 namespace BrokenH.MG.ResponsiveGui.Styles;
 

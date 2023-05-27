@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Elements;
 using Microsoft.Xna.Framework.Audio;
+using BrokenH.MG.ResponsiveGui.Common;
 
 namespace BrokenH.MG.ResponsiveGui.Styles;
 

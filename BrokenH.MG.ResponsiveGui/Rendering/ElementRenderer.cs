@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Styles;
+using BrokenH.MG.ResponsiveGui.Elements;
 
-namespace BrokenH.MG.ResponsiveGui.Elements;
+namespace BrokenH.MG.ResponsiveGui.Rendering;
 
 public class ElementRenderer
 {

@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text.Json;
+using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Elements;
+using BrokenH.MG.ResponsiveGui.Rendering;
 using BrokenH.MG.ResponsiveGui.Styles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -26,6 +28,7 @@ public class ResponsiveGuiSample : Game
 	private RootGuiElement _body;
 	private RootGuiElement _title;
 	private RootGuiElement _about;
+	private RootGuiElement _settings;
 	private RootGuiElement _grid;
 
 
@@ -68,7 +71,6 @@ public class ResponsiveGuiSample : Game
 		var forwardSound = Content.Load<SoundEffect>("Click_Enter");
 
 		// Set up layout (like css)
-		// var darkGray = new Color(40, 40, 40);
 		var darkGray = Color.DarkSlateGray;
 
 		// This bodyLayout is the layout I give to RootGuiElements.
@@ -206,16 +208,39 @@ public class ResponsiveGuiSample : Game
 			WordWrapMode = WordWrapMode.WordWrap,
 		};
 
-		// Build element tree (like html)
-		_title = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
-		_about = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
-		_grid = new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		var formRowLayout = new Layout()
+		{
+			FlexDirection = FlexDirection.Row,
+			JustifyContent = JustifyContent.SpaceBetween,
+			AlignItems = AlignItems.Center,
+			Width_ = "100%",
+		};
+		var formLabel = new Layout()
+		{
+			ForegroundColor = Color.White,
+			FontScale = 6,
+			Width_ = "35%",
+		};
+		var formControl = new Layout()
+		{
+			Width_ = "65%",
+			ForegroundColor = Color.White,
+			FontScale = 6,
+		};
 
+		// Build element tree (like html)
+		_title		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		_about		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		_settings	= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		_grid		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+
+		#region Title
 		_title
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Responsive GUI\nfor MonoGame"))
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
+					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
 					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(buttonLayout, null, "Button"))
@@ -224,7 +249,9 @@ public class ResponsiveGuiSample : Game
 				)
 			)
 		;
+		#endregion
 
+		#region About
 		_about
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "About page"))
@@ -235,6 +262,20 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
+			)
+		;
+		#endregion
+
+		_settings
+			.AddChild(new Container(menuFrameLayout)
+				.AddChild(new Label(headingLayout, "Settings"))
+				.AddChild(new DragScrollContainer(scrollingButtonContainer)
+					.AddChild(new Container(formRowLayout)
+						.AddChild(new Label(formLabel, "Volume"))
+						.AddChild(new Button(formControl, null, "TO DO"))
+					)
+				)
+				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 			)
 		;
 
