@@ -70,7 +70,7 @@ public class Layout
 	#region Main Layout Properties
 
 	public Transition? Transition { get; set; }
-	public Animation? Animation { get; set; }
+	public GuiAnimation? Animation { get; set; }
 	public Matrix Transform { get; set; } = Matrix.Identity;
 
 	public Color BackgroundColor { get; set; } = Color.Transparent;

@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 
 namespace BrokenH.MG.ResponsiveGui.Styles;
 
-public class Animation
+public class GuiAnimation
 {
 	private double _elapsedTime;
 	private int _currentFrame;
@@ -15,7 +15,7 @@ public class Animation
 	public bool IsComplete { get; private set; } = false;
 
 
-	public Animation(KeyFrame[] keyFrames, AnimationLoopType animationLoopType, int loopCount = 1)
+	public GuiAnimation(KeyFrame[] keyFrames, AnimationLoopType animationLoopType, int loopCount = 1)
 	{
 		_keyFrames = keyFrames;
 		_animationLoopType = animationLoopType;
