@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Elements;
@@ -45,7 +47,7 @@ public class ResponsiveGuiSample : Game
 		Window.AllowUserResizing = true;
 		Window.ClientSizeChanged += (sender, e) => WindowSizeChanged();
 		Content.RootDirectory = "Content";
-		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 60.0d);
+		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 144.0d);
 		IsMouseVisible = true;
 		SoundEffect.MasterVolume = _masterVolume;
 	}
@@ -234,15 +236,31 @@ public class ResponsiveGuiSample : Game
 			Height = 20,
 			ForegroundColor = new Color(250, 120, 0),
 			BackgroundColor = darkGray,
+
+			FlexDirection = FlexDirection.Row,
+			AlignItems = AlignItems.Center,
 		};
 		var sliderHandle = new Layout()
 		{
-			Width = 50,
-			Height = 50,
+			Width = 40,
+			Height = 40,
 
-			BackgroundColor = Color.Black,
+			// BackgroundColor = Color.Black,
+			BackgroundColor = Color.Transparent,
 			BorderColor = Color.White,
 			BorderThickness = 4,
+		};
+		sliderHandle[ElementStates.Hovered] = new Layout(sliderHandle)
+		{
+			// BackgroundColor = new Color(80, 80, 80),
+			// BorderColor = new Color(80, 80, 80),\
+			BorderColor = Color.Cyan,
+			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+		};
+		sliderHandle[ElementStates.Activated] = new Layout(sliderHandle[ElementStates.Hovered])
+		{
+			BorderColor = Color.OrangeRed,
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 		var sliderNumber = new Layout()
 		{
@@ -294,7 +312,7 @@ public class ResponsiveGuiSample : Game
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, ref _masterVolume))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, _masterVolume))
 						.AddChild(new Label(sliderNumber, 65.ToString()))
 					)
 				)
