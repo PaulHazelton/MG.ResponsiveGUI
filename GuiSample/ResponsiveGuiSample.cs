@@ -31,6 +31,9 @@ public class ResponsiveGuiSample : Game
 	private RootGuiElement _settings;
 	private RootGuiElement _grid;
 
+	// Settings
+	private float _masterVolume = 0.3f;
+
 
 	public ResponsiveGuiSample()
 	{
@@ -44,7 +47,7 @@ public class ResponsiveGuiSample : Game
 		Content.RootDirectory = "Content";
 		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 60.0d);
 		IsMouseVisible = true;
-		SoundEffect.MasterVolume = 0.6f;
+		SoundEffect.MasterVolume = _masterVolume;
 	}
 	protected override void Initialize()
 	{
@@ -109,6 +112,7 @@ public class ResponsiveGuiSample : Game
 			MaxHeight = 488,
 			Gap = 8,
 			ScrollPadding = 56,
+			MarginBottom = 8,
 			OverflowY = Overflow.Scroll,
 			AllowScrollingFromAnywhere = true,
 		};
@@ -223,11 +227,27 @@ public class ResponsiveGuiSample : Game
 			PaddingLeft = 20,
 			TextAlign = TextAlign.Left,
 		};
-		var formControl = new Layout()
+		var formSlider = new Layout()
 		{
-			Width_ = "65%",
+			Width_ = "55%",
+			Height = 20,
+			ForegroundColor = new Color(250, 120, 0),
+			BackgroundColor = darkGray,
+		};
+		var sliderHandle = new Layout()
+		{
+			Width = 50,
+			Height = 50,
+
+			BackgroundColor = Color.Black,
+			BorderColor = Color.White,
+			BorderThickness = 4,
+		};
+		var sliderNumber = new Layout()
+		{
+			Width_ = "10%",
 			ForegroundColor = Color.White,
-			FontScale = 6,
+			FontScale = 4,
 		};
 
 		// Build element tree (like html)
@@ -273,7 +293,8 @@ public class ResponsiveGuiSample : Game
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Button(formControl, null, "TO DO"))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, ref _masterVolume))
+						.AddChild(new Label(sliderNumber, 65.ToString()))
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
