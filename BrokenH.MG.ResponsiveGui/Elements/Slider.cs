@@ -1,3 +1,4 @@
+using BrokenH.MG.ResponsiveGui.Rendering;
 using BrokenH.MG.ResponsiveGui.Styles;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -31,6 +32,7 @@ public class Slider : GuiElement
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
 	{
+		// IUiPrimitiveDrawer uiPrimitiveDrawer = UiPrimitiveDrawer;
 
 	}
 }
