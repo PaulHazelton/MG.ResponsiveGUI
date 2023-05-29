@@ -65,6 +65,7 @@ public class ResponsiveGuiSample : Game
 		// Load content
 		var font = Content.Load<SpriteFont>("pixelFont");
 		Layout.Initialize(font);
+		GuiElement.Initialize(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
 		var itemFrame = new NineSliceAsset(Content.Load<Texture2D>("MenuItemFrame"), LoadJson<NineSliceSpec>("MenuItemFrame.json"));
 
@@ -251,10 +252,10 @@ public class ResponsiveGuiSample : Game
 		};
 
 		// Build element tree (like html)
-		_title		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
-		_about		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
-		_settings	= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
-		_grid		= new RootGuiElement(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, bodyLayout);
+		_title		= new RootGuiElement(bodyLayout);
+		_about		= new RootGuiElement(bodyLayout);
+		_settings	= new RootGuiElement(bodyLayout);
+		_grid		= new RootGuiElement(bodyLayout);
 
 		#region Title
 		_title
@@ -440,9 +441,7 @@ public class ResponsiveGuiSample : Game
 		int w = GraphicsDevice.Viewport.Width;
 		int h = GraphicsDevice.Viewport.Height;
 
-		_title.UpdateScreenSize(w, h);
-		_about.UpdateScreenSize(w, h);
-		_grid.UpdateScreenSize(w, h);
+		GuiElement.UpdateSize(w, h);
 	}
 
 	private bool WasPressed(Keys key) => (_newKeyState.IsKeyDown(key) && _oldKeyState.IsKeyUp(key));

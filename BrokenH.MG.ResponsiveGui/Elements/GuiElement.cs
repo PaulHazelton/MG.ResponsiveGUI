@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
 using BrokenH.MG.ResponsiveGui.Styles;
 using BrokenH.MG.ResponsiveGui.Common;
+using BrokenH.MG.ResponsiveGui.Rendering;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
@@ -15,17 +15,22 @@ public abstract class GuiElement : IDisposable
 {
 	#region Statics
 
+	// Global Dependencies
+	protected static ElementRenderer ElementRenderer = null!;
+
 	// Global initialization
-	public static void Initialize(int screenWidth, int screenHeight)
+	public static void Initialize(GraphicsDevice graphicsDevice, int screenWidth, int screenHeight)
 	{
 		ScreenWidth = screenWidth;
 		ScreenHeight = screenHeight;
+		ElementRenderer = new ElementRenderer(graphicsDevice, screenWidth, screenHeight);
 	}
 
 	public static void UpdateSize(int screenWidth, int screenHeight)
 	{
 		ScreenWidth = screenWidth;
 		ScreenHeight = screenHeight;
+		ElementRenderer.UpdateScreenSize(screenWidth, screenHeight);
 	}
 
 	// Behavior tuning

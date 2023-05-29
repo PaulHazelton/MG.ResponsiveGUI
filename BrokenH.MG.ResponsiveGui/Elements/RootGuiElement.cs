@@ -3,15 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using BrokenH.MG.ResponsiveGui.Styles;
-using BrokenH.MG.ResponsiveGui.Rendering;
 using BrokenH.MG.ResponsiveGui.Common;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
 public class RootGuiElement : GuiElement
 {
-	private ElementRenderer _elementRenderer;
-
 	private GuiElement? _focusedElement;
 	public GuiElement? FocusedElement
 	{
@@ -29,14 +26,10 @@ public class RootGuiElement : GuiElement
 
 
 	// Constructor
-	public RootGuiElement(GraphicsDevice graphicsDevice, int screenWidth, int screenHeight, Layout? layout = null)
-		: base(layout)
-	{
-		_elementRenderer = new ElementRenderer(graphicsDevice, screenWidth, screenHeight, this);
-	}
+	public RootGuiElement(Layout? layout = null) : base(layout) { }
 
 	// Game Loop
-	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState = null) => _elementRenderer.Draw(spriteBatch, samplerState);
+	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState = null) => GuiElement.ElementRenderer.Draw(spriteBatch, samplerState, this);
 	public void Update(GameTime gameTime)
 	{
 		var mouse = Mouse.GetState().Position;
@@ -110,10 +103,4 @@ public class RootGuiElement : GuiElement
 		this.ToAll(e => e.ResetTransitions(e == FocusedElement ? ElementStates.Hovered : ElementStates.Neutral));
 	}
 
-	// Notifications
-	public void UpdateScreenSize(int screenWidth, int screenHeight)
-	{
-		_elementRenderer.UpdateScreenSize(screenWidth, screenHeight);
-		GuiElement.UpdateSize(screenWidth, screenHeight);
-	}
 }
