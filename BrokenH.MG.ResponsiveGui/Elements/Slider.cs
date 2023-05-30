@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Styles;
@@ -15,9 +16,6 @@ public class Slider : GuiElement
 	private float _value;
 
 	// Dragging
-	private Point _mouseStart;
-	private Point _handlePosStart;
-	private float _valueStart;
 	private bool _isDragging;
 
 	private Button _handle { get; set; }
@@ -29,43 +27,34 @@ public class Slider : GuiElement
 		_min = min;
 		_max = max;
 		_value = value;
-		_handle = new Button(handleLayout);
+		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle);
 		AddChild(_handle);
 	}
 
-	// private void ClickyClick()
-	// {
-	// 	_isDragging = true;
-	// 	_mouseStart = Mouse.GetState().Position;
-	// 	_handlePosStart = _handle.BoundingRectangle.Location;
-	// 	_valueStart = _value;
-	// }
-
-	protected override void OnMouseEvent(byte mouseButton, ButtonState buttonState)
+	protected override void OnMouseEvent(byte button, ButtonState buttonState)
 	{
-		if (buttonState == ButtonState.Pressed && (MouseIsContained || CurrentLayout.AllowScrollingFromAnywhere))
-		{
-			_isDragging = true;
-			_mouseStart = Mouse.GetState().Position;
-			_handlePosStart = _handle.BoundingRectangle.Location;
-			_valueStart = _value;
-		}
+		if (MouseIsContained)
+			ClickSliderOrHandle(buttonState);
 
 		if (buttonState == ButtonState.Released)
 			_isDragging = false;
+	}
+	private void ClickSliderOrHandle(ButtonState buttonState)
+	{
+		if (buttonState == ButtonState.Pressed)
+		{
+			_isDragging = true;
+			_value = GetValue();
+		}
 	}
 
 	protected override void OnUpdate(GameTime gameTime)
 	{
 		if (_isDragging)
 		{
-			var mousePosition = Mouse.GetState().Position;
-			var difference = mousePosition - _mouseStart;
-
-			float normalDiff = ((float)difference.X) / ((float)BoundingRectangle.Width);
-			_value = _valueStart + normalDiff;
-
-			Debug.WriteLine(normalDiff);
+			_value = GetValue();
+			// Don't un-activate on drag
+			_handle.State = ElementStates.Activated;
 		}
 
 		// TODO find a better way to do this
@@ -98,10 +87,35 @@ public class Slider : GuiElement
 		return (_value - _min) / (_max - _min);
 	}
 
+	private float GetValue()
+	{
+		float x = Mouse.GetState().Position.X - BoundingRectangle.X;
+		float proportion = x / BoundingRectangle.Width;
+		return MathHelper.Clamp(MathHelper.Lerp(_min, _max, proportion), _min, _max);
+	}
+
 	public class SliderHandle : Button
 	{
-		public SliderHandle(Layout? layout) : base(layout) { }
+		private Action<ButtonState> _clickCallback;
 
-		// TODO Don't un-activate on drag
+
+		public SliderHandle(Layout? layout, Action<ButtonState> clickCallback) : base(layout)
+		{
+			_clickCallback = clickCallback;
+		}
+
+		protected override void OnMouseEvent(byte mouseButton, ButtonState buttonState)
+		{
+			if (MouseIsContained)
+				_clickCallback(buttonState);
+
+			if (buttonState == ButtonState.Released)
+			{
+				if (MouseIsContained)
+					State = ElementStates.Hovered;
+				else
+					State = ElementStates.Neutral;
+			}
+		}
 	}
 }
