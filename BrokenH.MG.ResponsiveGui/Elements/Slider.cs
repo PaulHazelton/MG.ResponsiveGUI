@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Styles;
 using Microsoft.Xna.Framework;
@@ -14,6 +13,16 @@ public class Slider : GuiElement
 	private float _min;
 	private float _max;
 	private float _value;
+	private float Value
+	{
+		get => _value;
+		set
+		{
+			_value = value;
+			_setValue?.Invoke(value);
+		}
+	}
+	private Action<float> _setValue;
 
 	// Dragging
 	private bool _isDragging;
@@ -21,12 +30,13 @@ public class Slider : GuiElement
 	private Button _handle { get; set; }
 
 
-	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float value)
+	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float initialValue, Action<float> valueSetter)
 	: base(sliderLayout)
 	{
 		_min = min;
 		_max = max;
-		_value = value;
+		Value = initialValue;
+		_setValue = valueSetter;
 		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle);
 		AddChild(_handle);
 	}
@@ -44,7 +54,7 @@ public class Slider : GuiElement
 		if (buttonState == ButtonState.Pressed)
 		{
 			_isDragging = true;
-			_value = GetValue();
+			Value = GetValue();
 		}
 	}
 
@@ -52,7 +62,7 @@ public class Slider : GuiElement
 	{
 		if (_isDragging)
 		{
-			_value = GetValue();
+			Value = GetValue();
 			// Don't un-activate on drag
 			_handle.State = ElementStates.Activated;
 		}
@@ -84,7 +94,7 @@ public class Slider : GuiElement
 
 	private float GetPercentage()
 	{
-		return (_value - _min) / (_max - _min);
+		return (Value - _min) / (_max - _min);
 	}
 
 	private float GetValue()

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Elements;
@@ -36,6 +34,9 @@ public class ResponsiveGuiSample : Game
 	// Settings
 	private float _masterVolume = 0.3f;
 
+	// Property to test slider
+	private float Volume = 0.3f;
+
 
 	public ResponsiveGuiSample()
 	{
@@ -54,11 +55,10 @@ public class ResponsiveGuiSample : Game
 	protected override void Initialize()
 	{
 		base.Initialize();
+		_spriteBatch = new SpriteBatch(GraphicsDevice);
 	}
 	protected override void LoadContent()
 	{
-		_spriteBatch = new SpriteBatch(GraphicsDevice);
-
 		var aboutText = "What the heck did you just frickin' say about me, you little whiner? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills."
 			+ " I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces.You are nothing to me but just another target. I will wipe you the frick out with precision the likes of which has never been seen before on this Earth, mark my frickin' words.You think you can get away with saying that crap to me over the Internet?"
 			+ " Think again, buddy. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, buddy."
@@ -75,6 +75,8 @@ public class ResponsiveGuiSample : Game
 		var hoverSound = Content.Load<SoundEffect>("Hover");
 		var backSound = Content.Load<SoundEffect>("Click_Back");
 		var forwardSound = Content.Load<SoundEffect>("Click_Enter");
+
+		#region Layouts
 
 		// Set up layout (like css)
 		var darkGray = Color.DarkSlateGray;
@@ -269,6 +271,8 @@ public class ResponsiveGuiSample : Game
 			FontScale = 4,
 		};
 
+		#endregion
+
 		// Build element tree (like html)
 		_title		= new RootGuiElement(bodyLayout);
 		_about		= new RootGuiElement(bodyLayout);
@@ -312,8 +316,8 @@ public class ResponsiveGuiSample : Game
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, _masterVolume))
-						.AddChild(new Label(sliderNumber, 65.ToString()))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, Volume, (value) => Volume = value))
+						.AddChild(new Label(sliderNumber, () => Volume.ToString("P0")))
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))

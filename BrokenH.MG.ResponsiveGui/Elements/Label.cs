@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Styles;
+using System;
+using System.Diagnostics;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
@@ -14,22 +15,32 @@ public class Label : GuiElement
 	public string Text
 	{
 		get => _text;
-		[MemberNotNull(nameof(_lines))]
 		set
 		{
-			_text = value;
-			CreateLines(_text);
-			TextSize = ComputeTotalTextSize();
+			if (_text != value)
+			{
+				_text = value;
+				CreateLines(_text);
+				TextSize = ComputeTotalTextSize();
+				AfterRectangleCompute();
+			}
 		}
 	}
+	public Func<string>? TextGetter { get; set; }
 
 
 	public Label(Layout? layout, string text = "") : base(layout)
 	{
 		Text = text;
+		_lines = new Line[0];
+	}
+	public Label(Layout? layout, Func<string> textGetter) : base(layout)
+	{
+		TextGetter = textGetter;
+		Text = textGetter();
+		_lines = new Line[0];
 	}
 
-	[MemberNotNull(nameof(_lines))]
 	private void CreateLines(string fullText)
 	{
 		if (CurrentLayout.Font == null)
@@ -240,6 +251,12 @@ public class Label : GuiElement
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
 	{
+		if (TextGetter != null)
+			Text = TextGetter();
+
+		if (string.IsNullOrEmpty(Text))
+			return;
+
 		if (CurrentLayout.ForegroundColor == Color.Transparent)
 			return;
 
