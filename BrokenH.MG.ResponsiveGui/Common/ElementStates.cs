@@ -1,4 +1,4 @@
-namespace BrokenH.MG.ResponsiveGui.Elements;
+namespace BrokenH.MG.ResponsiveGui.Common;
 
 public static class ElementStates
 {

@@ -2,14 +2,14 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace BrokenH.MG.ResponsiveGui.Elements;
+namespace BrokenH.MG.ResponsiveGui.Rendering;
 
-internal class UIPrimativeDrawer
+internal class UiPrimitiveDrawer : IUiPrimitiveDrawer
 {
 	private Texture2D _rectangleSprite;
 	private static Vector2 _rectangleOrigin;
 
-	internal UIPrimativeDrawer(GraphicsDevice graphicsDevice)
+	internal UiPrimitiveDrawer(GraphicsDevice graphicsDevice)
 	{
 		// Make a 1 x 1 pixel to draw rectangles and lines
 		_rectangleSprite = new Texture2D(graphicsDevice, 1, 1);
@@ -17,15 +17,15 @@ internal class UIPrimativeDrawer
 		_rectangleOrigin = new Vector2(0.5f, 0.5f);
 	}
 
-	internal void DrawRectangle(SpriteBatch spriteBatch, Vector2 position, Vector2 size, float angle, Color color, float layerDepth = 0)
+	public void DrawRectangle(SpriteBatch spriteBatch, Vector2 position, Vector2 size, float angle, Color color, float layerDepth = 0)
 	{
 		spriteBatch.Draw(_rectangleSprite, position, null, color, angle, _rectangleOrigin, size, SpriteEffects.None, layerDepth);
 	}
-	internal void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
+	public void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
 	{
 		spriteBatch.Draw(_rectangleSprite, rectangle, null, color, 0, Vector2.Zero, SpriteEffects.None, 0);
 	}
-	internal void DrawLine(SpriteBatch spriteBatch, Vector2 p1, Vector2 p2, float thickness, Color color)
+	public void DrawLine(SpriteBatch spriteBatch, Vector2 p1, Vector2 p2, float thickness, Color color)
 	{
 		Vector2 midpoint = Midpoint(p1, p2);
 		Vector2 size = new Vector2((p1 - p2).Length(), thickness);
@@ -33,7 +33,7 @@ internal class UIPrimativeDrawer
 
 		DrawRectangle(spriteBatch, midpoint, size, angle, color);
 	}
-	internal void DrawRectangleOutline(SpriteBatch spriteBatch, Rectangle rectangle, Color color, float thickness, float inset)
+	public void DrawRectangleOutline(SpriteBatch spriteBatch, Rectangle rectangle, Color color, float thickness, float inset)
 	{
 		if (thickness == 0) return;
 		// Adjust alpha for very thin lines

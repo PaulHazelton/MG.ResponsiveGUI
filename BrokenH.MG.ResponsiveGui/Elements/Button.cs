@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using BrokenH.MG.ResponsiveGui.Styles;
+using BrokenH.MG.ResponsiveGui.Common;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
@@ -9,14 +10,15 @@ public class Button : Label
 {
 	public static int DragForgiveness = 8;
 	public static byte PrimaryClick = 1;
-	private Action? _clickAction;
+
+	protected Action? ClickAction;
 	private Point _mouseDragStart;
 
 
 	public Button(Layout? layout, Action? clickAction = null, string text = "")
 	: base(layout, text)
 	{
-		_clickAction = clickAction;
+		ClickAction = clickAction;
 		Focusable = true;
 	}
 
@@ -36,7 +38,7 @@ public class Button : Label
 	protected override void OnActivateRelease()
 	{
 		State = ElementStates.Hovered;
-		_clickAction?.Invoke();
+		ClickAction?.Invoke();
 	}
 
 	protected override void OnUpdate(GameTime deltaTime)

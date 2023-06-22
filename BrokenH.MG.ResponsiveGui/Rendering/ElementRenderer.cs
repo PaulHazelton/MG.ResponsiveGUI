@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Styles;
+using BrokenH.MG.ResponsiveGui.Elements;
 
-namespace BrokenH.MG.ResponsiveGui.Elements;
+namespace BrokenH.MG.ResponsiveGui.Rendering;
 
 public class ElementRenderer
 {
@@ -13,42 +14,37 @@ public class ElementRenderer
 	public static Color DebugInnerColor { get; set; } = Color.Yellow;
 
 	// Private
-	private RootGuiElement _rootElement;
+	private int _screenWidth { get; set; }
+	private int _screenHeight { get; set; }
 
-	private int ScreenWidth { get; set; }
-	private int ScreenHeight { get; set; }
-
-	private GraphicsDevice GraphicsDevice { get; set; }
-
-	private UIPrimativeDrawer _uIPrimativeDrawer;
+	private GraphicsDevice _graphicsDevice { get; set; }
+	private IUiPrimitiveDrawer _uiPrimitiveDrawer;
 
 
 	// Constructor
-	public ElementRenderer(GraphicsDevice graphicsDevice, int screenWidth, int screenHeight, RootGuiElement rootElement)
+	public ElementRenderer(GraphicsDevice graphicsDevice, IUiPrimitiveDrawer uiPrimitiveDrawer, int screenWidth, int screenHeight)
 	{
-		GraphicsDevice = graphicsDevice;
-		ScreenWidth = screenWidth;
-		ScreenHeight = screenHeight;
-		_rootElement = rootElement;
-
-		_uIPrimativeDrawer = new UIPrimativeDrawer(graphicsDevice);
+		_graphicsDevice = graphicsDevice;
+		_screenWidth = screenWidth;
+		_screenHeight = screenHeight;
+		_uiPrimitiveDrawer = uiPrimitiveDrawer;
 		// RenderTargets = new List<RenderTarget2D>();
 	}
 
 	public void UpdateScreenSize(int screenWidth, int screenHeight)
 	{
-		ScreenWidth = screenWidth;
-		ScreenHeight = screenHeight;
+		_screenWidth = screenWidth;
+		_screenHeight = screenHeight;
 
 		// for (int i = 0; i < RenderTargets.Count; i++)
 		// 	RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 	}
 
-	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState) => Draw(spriteBatch, _rootElement, Matrix.Identity, new Rectangle(0, 0, ScreenWidth, ScreenHeight));
+	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState, RootGuiElement rootElement) => Draw(spriteBatch, rootElement, Matrix.Identity, new Rectangle(0, 0, _screenWidth, _screenHeight));
 	private void Draw(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
 	{
 		// Simple draw
-		if (!e.CurrentLayout.RequiresComplicatedDraw || GraphicsDevice == null)
+		if (!e.CurrentLayout.RequiresComplicatedDraw || _graphicsDevice == null)
 		{
 			DrawThisElement(spriteBatch, e);
 			DrawChildren(spriteBatch, e, previousTransform, previousClipping);
@@ -59,7 +55,7 @@ public class ElementRenderer
 		spriteBatch.End();
 
 		// Store previous spritebatch states
-		var previousRaster = GraphicsDevice.RasterizerState;
+		var previousRaster = _graphicsDevice.RasterizerState;
 		// Accumulate transforms
 		var nextTransform = previousTransform * (e._currentTransform ?? Matrix.Identity);
 		// Transform clipping rectangle
@@ -82,7 +78,7 @@ public class ElementRenderer
 
 		DrawThisElement(spriteBatch, e);
 		spriteBatch.End();
-		GraphicsDevice.ScissorRectangle = nextClipping;
+		_graphicsDevice.ScissorRectangle = nextClipping;
 		spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.NonPremultiplied,
@@ -95,7 +91,7 @@ public class ElementRenderer
 		spriteBatch.End();
 
 		// Return to previous state
-		GraphicsDevice.ScissorRectangle = previousClipping;
+		_graphicsDevice.ScissorRectangle = previousClipping;
 		spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.NonPremultiplied,
@@ -108,7 +104,7 @@ public class ElementRenderer
 	{
 		// Draw Background
 		if (e.CurrentLayout.BackgroundColor != Color.Transparent)
-			_uIPrimativeDrawer.DrawRectangle(spriteBatch, e.BoundingRectangle, e.CurrentLayout.BackgroundColor);
+			_uiPrimitiveDrawer.DrawRectangle(spriteBatch, e.BoundingRectangle, e.CurrentLayout.BackgroundColor);
 
 		// Draw Image
 		if (e.CurrentLayout.NineSlice != null)
@@ -161,21 +157,21 @@ public class ElementRenderer
 			var br = tl + e.BoundingRectangle.Size.ToVector2();
 
 			if (colorTop != Color.Transparent && thicknessTop > 0)
-				_uIPrimativeDrawer.DrawLine(spriteBatch, tl + new Vector2(0, (thicknessTop / 2f)), tr + new Vector2(0, (thicknessTop / 2f)), thicknessTop, colorTop);
+				_uiPrimitiveDrawer.DrawLine(spriteBatch, tl + new Vector2(0, (thicknessTop / 2f)), tr + new Vector2(0, (thicknessTop / 2f)), thicknessTop, colorTop);
 			if (colorRight != Color.Transparent && thicknessRight > 0)
-				_uIPrimativeDrawer.DrawLine(spriteBatch, tr + new Vector2(-(thicknessRight / 2f), 0), br + new Vector2(-(thicknessRight / 2f), 0), thicknessRight, colorRight);
+				_uiPrimitiveDrawer.DrawLine(spriteBatch, tr + new Vector2(-(thicknessRight / 2f), 0), br + new Vector2(-(thicknessRight / 2f), 0), thicknessRight, colorRight);
 			if (colorBottom != Color.Transparent && thicknessBottom > 0)
-				_uIPrimativeDrawer.DrawLine(spriteBatch, br + new Vector2(0, -(thicknessBottom / 2f)), bl + new Vector2(0, -(thicknessBottom / 2f)), thicknessBottom, colorBottom);
+				_uiPrimitiveDrawer.DrawLine(spriteBatch, br + new Vector2(0, -(thicknessBottom / 2f)), bl + new Vector2(0, -(thicknessBottom / 2f)), thicknessBottom, colorBottom);
 			if (colorLeft != Color.Transparent && thicknessLeft > 0)
-				_uIPrimativeDrawer.DrawLine(spriteBatch, bl + new Vector2((thicknessLeft / 2f), 0), tl + new Vector2((thicknessLeft / 2f), 0), thicknessLeft, colorLeft);
+				_uiPrimitiveDrawer.DrawLine(spriteBatch, bl + new Vector2((thicknessLeft / 2f), 0), tl + new Vector2((thicknessLeft / 2f), 0), thicknessLeft, colorLeft);
 		}
 
 		// Debug drawing
 		if (DrawDebugBorders)
 		{
-			_uIPrimativeDrawer.DrawRectangleOutline(spriteBatch, e.OuterRectangle, DebugOuterColor, 1, 0.5f);
-			_uIPrimativeDrawer.DrawRectangleOutline(spriteBatch, e.BoundingRectangle, DebugBoundingColor, 1, 0.5f);
-			_uIPrimativeDrawer.DrawRectangleOutline(spriteBatch, e.InnerRectangle, DebugInnerColor, 1, 0.5f);
+			_uiPrimitiveDrawer.DrawRectangleOutline(spriteBatch, e.OuterRectangle, DebugOuterColor, 1, 0.5f);
+			_uiPrimitiveDrawer.DrawRectangleOutline(spriteBatch, e.BoundingRectangle, DebugBoundingColor, 1, 0.5f);
+			_uiPrimitiveDrawer.DrawRectangleOutline(spriteBatch, e.InnerRectangle, DebugInnerColor, 1, 0.5f);
 		}
 	}
 	private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
@@ -277,9 +273,9 @@ public class ElementRenderer
 	}
 
 	// Helper functions
-	Rectangle GetClippingRectangle(GuiElement e)
+	private Rectangle GetClippingRectangle(GuiElement e)
 	{
-		int x = 0, y = 0, w = ScreenWidth, h = ScreenHeight;
+		int x = 0, y = 0, w = _screenWidth, h = _screenHeight;
 		if (e.CurrentLayout.OverflowX != Overflow.Visible)
 		{
 			x = e.InnerRectangle.X;
@@ -293,7 +289,7 @@ public class ElementRenderer
 		return new Rectangle(x, y, w, h);
 	}
 
-	Rectangle TransformRectangle(Rectangle r, Matrix m)
+	private Rectangle TransformRectangle(Rectangle r, Matrix m)
 	{
 		var p1 = r.Location.ToVector2();
 		var p2 = new Vector2(r.Right, r.Bottom);
