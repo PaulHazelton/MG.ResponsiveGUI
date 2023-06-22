@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BrokenH.MG.ResponsiveGui.Styles;
 using System;
-using System.Diagnostics;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
@@ -18,12 +17,7 @@ public class Label : GuiElement
 		set
 		{
 			if (_text != value)
-			{
 				_text = value;
-				CreateLines(_text);
-				TextSize = ComputeTotalTextSize();
-				AfterRectangleCompute();
-			}
 		}
 	}
 	public Func<string>? TextGetter { get; set; }
@@ -41,128 +35,147 @@ public class Label : GuiElement
 		_lines = new Line[0];
 	}
 
-	private void CreateLines(string fullText)
+	protected override void OnUpdate(GameTime gameTime)
 	{
-		if (CurrentLayout.Font == null)
+		if (TextGetter != null)
+			Text = TextGetter();
+	}
+
+	protected override void AfterRectangleCompute()
+	{
+		if (string.IsNullOrEmpty(Text))
+			return;
+
+		// TODO: If text has changed, font size has changed, or bounding box (position or size) has changed, call the next three functions
+		CreateLines();
+		ComputeTotalTextSize();
+		AlignLines();
+	}
+
+	private void CreateLines()
+	{
+		if (CurrentLayout.Font == null || Text == string.Empty)
 		{
 			_lines = new Line[0];
 			return;
 		}
 
-		if (fullText == string.Empty)
-		{
-			_lines = new Line[]
-			{
-				new Line(fullText, CurrentLayout.Font.MeasureString(fullText) * CurrentLayout.FontScale)
-			};
-		}
-
 		_lines = CurrentLayout.WordWrapMode switch
 		{
-			WordWrapMode.None => WordWrapNone(fullText),
-			WordWrapMode.WordWrap => WordWrap(fullText),
-			WordWrapMode.BreakWord => WordWrapBreakWord(fullText),
-			_ => WordWrapNone(fullText),
+			WordWrapMode.None => WordWrapNone(Text),
+			WordWrapMode.WordWrap => WordWrap(Text),
+			WordWrapMode.BreakWord => WordWrapBreakWord(Text),
+			_ => WordWrapNone(Text),
 		};
-	}
-	private Line[] WordWrapNone(string fullText)
-	{
-		if (CurrentLayout.Font == null)
-			return new Line[0];
-		return new Line[]
+
+		Line[] WordWrapNone(string fullText)
 		{
+			if (CurrentLayout.Font == null)
+				return new Line[0];
+			return new Line[]
+			{
 			new Line(fullText, CurrentLayout.Font.MeasureString(fullText) * CurrentLayout.FontScale)
-		};
-	}
-	private Line[] WordWrap(string fullText)
-	{
-		if (CurrentLayout.Font == null)
-			return new Line[0];
-
-		if (Size.X == 0)
-			return WordWrapNone(fullText);
-
-		List<Line> lines = new();
-		float maxLineWidth = (Size.X) - CurrentLayout.PaddingLeft - CurrentLayout.PaddingRight;
-		var characters = fullText.ToCharArray();
-
-		int currentLineStartIndex = 0;
-		int lastWhitespaceIndex = 0;
-		Vector2 lineSize = Vector2.Zero;
-		Vector2 previousLineSize = Vector2.Zero;
-		string subString;
-
-		for (int i = 0; i < characters.Length; i++)
+			};
+		}
+		Line[] WordWrap(string fullText)
 		{
-			if (char.IsWhiteSpace(characters[i]))
-			{
-				previousLineSize = lineSize;
-				lastWhitespaceIndex = i;
-			}
+			if (CurrentLayout.Font == null)
+				return new Line[0];
 
-			subString = fullText.Substring(currentLineStartIndex, i + 1 - currentLineStartIndex);
-			lineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
-			if (lineSize.X > maxLineWidth)
+			if (Size.X == 0)
+				return WordWrapNone(fullText);
+
+			List<Line> lines = new();
+			float maxLineWidth = (Size.X) - CurrentLayout.PaddingLeft - CurrentLayout.PaddingRight;
+			var characters = fullText.ToCharArray();
+
+			int currentLineStartIndex = 0;
+			int lastWhitespaceIndex = 0;
+			Vector2 lineSize = Vector2.Zero;
+			Vector2 previousLineSize = Vector2.Zero;
+			string subString;
+
+			for (int i = 0; i < characters.Length; i++)
 			{
-				if (lastWhitespaceIndex > currentLineStartIndex)
-					subString = fullText.Substring(currentLineStartIndex, lastWhitespaceIndex - currentLineStartIndex);
-				else
+				if (char.IsWhiteSpace(characters[i]))
 				{
-					subString = fullText.Substring(currentLineStartIndex, i - currentLineStartIndex);
+					previousLineSize = lineSize;
 					lastWhitespaceIndex = i;
 				}
-				lines.Add(new Line(subString, previousLineSize));
-				currentLineStartIndex = lastWhitespaceIndex + 1;
+
+				subString = fullText.Substring(currentLineStartIndex, i + 1 - currentLineStartIndex);
+				lineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
+				if (lineSize.X > maxLineWidth)
+				{
+					if (lastWhitespaceIndex > currentLineStartIndex)
+						subString = fullText.Substring(currentLineStartIndex, lastWhitespaceIndex - currentLineStartIndex);
+					else
+					{
+						subString = fullText.Substring(currentLineStartIndex, i - currentLineStartIndex);
+						lastWhitespaceIndex = i;
+					}
+					lines.Add(new Line(subString, previousLineSize));
+					currentLineStartIndex = lastWhitespaceIndex + 1;
+				}
 			}
+			subString = fullText.Substring(currentLineStartIndex);
+			previousLineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
+			lines.Add(new Line(subString, previousLineSize));
+
+			return lines.ToArray();
 		}
-		subString = fullText.Substring(currentLineStartIndex);
-		previousLineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
-		lines.Add(new Line(subString, previousLineSize));
-
-		return lines.ToArray();
-	}
-	private Line[] WordWrapBreakWord(string fullText)
-	{
-		if (CurrentLayout.Font == null)
-			return new Line[0];
-
-		List<Line> lines = new();
-		if (Size.X == 0)
-			return WordWrapNone(fullText);
-
-		float maxLineWidth = Size.X - CurrentLayout.PaddingLeft - CurrentLayout.PaddingRight;
-		var characters = fullText.ToCharArray();
-
-		int currentLineStartIndex = 0;
-		Vector2 lineSize = Vector2.Zero;
-		Vector2 previousLineSize = Vector2.Zero;
-		string subString;
-
-		for (int i = 0; i < characters.Length; i++)
+		Line[] WordWrapBreakWord(string fullText)
 		{
-			previousLineSize = lineSize;
+			if (CurrentLayout.Font == null)
+				return new Line[0];
 
-			subString = fullText.Substring(currentLineStartIndex, i + 1 - currentLineStartIndex);
-			lineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
-			if (lineSize.X > maxLineWidth)
+			List<Line> lines = new();
+			if (Size.X == 0)
+				return WordWrapNone(fullText);
+
+			float maxLineWidth = Size.X - CurrentLayout.PaddingLeft - CurrentLayout.PaddingRight;
+			var characters = fullText.ToCharArray();
+
+			int currentLineStartIndex = 0;
+			Vector2 lineSize = Vector2.Zero;
+			Vector2 previousLineSize = Vector2.Zero;
+			string subString;
+
+			for (int i = 0; i < characters.Length; i++)
 			{
-				subString = fullText.Substring(currentLineStartIndex, i - currentLineStartIndex);
-				lines.Add(new Line(subString, previousLineSize));
-				currentLineStartIndex = i;
+				previousLineSize = lineSize;
+
+				subString = fullText.Substring(currentLineStartIndex, i + 1 - currentLineStartIndex);
+				lineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
+				if (lineSize.X > maxLineWidth)
+				{
+					subString = fullText.Substring(currentLineStartIndex, i - currentLineStartIndex);
+					lines.Add(new Line(subString, previousLineSize));
+					currentLineStartIndex = i;
+				}
 			}
+			subString = fullText.Substring(currentLineStartIndex);
+			previousLineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
+			lines.Add(new Line(subString, previousLineSize));
+
+			return lines.ToArray();
 		}
-		subString = fullText.Substring(currentLineStartIndex);
-		previousLineSize = CurrentLayout.Font.MeasureString(subString) * CurrentLayout.FontScale;
-		lines.Add(new Line(subString, previousLineSize));
-
-		return lines.ToArray();
 	}
-
-	protected override void AfterRectangleCompute()
+	private void ComputeTotalTextSize()
 	{
-		CreateLines(_text);
-		TextSize = ComputeTotalTextSize();
+		// Add heights, max widths
+		float width = 0;
+		float height = 0;
+		foreach (var line in _lines)
+		{
+			width = MathHelper.Max(width, line.Size.X);
+			height += line.Size.Y;
+		}
 
+		TextSize = new Vector2(width, height) / CurrentLayout.FontScale;
+	}
+	private void AlignLines()
+	{
 		switch (CurrentLayout.TextAlign)
 		{
 			case TextAlign.Left: LeftAlignLines(); break;
@@ -175,85 +188,69 @@ public class Label : GuiElement
 			case TextAlignVertical.Middle: MiddleAlignLines(); break;
 			case TextAlignVertical.Bottom: BottomAlignLines(); break;
 		}
-	}
-	private void LeftAlignLines()
-	{
-		float x = Position.X + CurrentLayout.PaddingLeft;
-		float y = Position.Y + CurrentLayout.PaddingTop;
-		foreach (var line in _lines)
-		{
-			line.Position = new Vector2(x, y);
-			y += line.Size.Y;
-		}
-	}
-	private void RightAlignLines()
-	{
-		float x = Position.X + Size.X - CurrentLayout.PaddingRight;
-		float y = Position.Y + CurrentLayout.PaddingTop;
-		foreach (var line in _lines)
-		{
-			line.Position = new Vector2(x - line.Size.X, y);
-			y += line.Size.Y;
-		}
-	}
-	private void CenterAlignLines()
-	{
-		float y = Position.Y + CurrentLayout.PaddingTop;
-		float w = 0;
-		foreach (var line in _lines)
-		{
-			w = (Size.X - line.Size.X) / 2f;
-			line.Position = new Vector2(Position.X + w, y);
-			y += line.Size.Y;
-		}
-	}
-	private void TopAlignLines()
-	{
-		float y = Position.Y + CurrentLayout.PaddingTop;
-		foreach (var line in _lines)
-		{
-			line.Position.Y = y;
-			y += line.Size.Y;
-		}
-	}
-	private void MiddleAlignLines()
-	{
-		float y = Position.Y + ((Size.Y - TextSize!.Value.Y) / 2f);
-		foreach (var line in _lines)
-		{
-			line.Position.Y = y;
-			y += line.Size.Y;
-		}
-	}
-	private void BottomAlignLines()
-	{
-		float y = Position.Y + Size.Y - CurrentLayout.PaddingBottom - TextSize!.Value.Y;
-		foreach (var line in _lines)
-		{
-			line.Position.Y = y;
-			y += line.Size.Y;
-		}
-	}
 
-	private Vector2 ComputeTotalTextSize()
-	{
-		// Add heights, max widths
-		float width = 0;
-		float height = 0;
-		foreach (var line in _lines)
+		void LeftAlignLines()
 		{
-			width = MathHelper.Max(width, line.Size.X);
-			height += line.Size.Y;
+			float x = Position.X + CurrentLayout.PaddingLeft;
+			float y = Position.Y + CurrentLayout.PaddingTop;
+			foreach (var line in _lines)
+			{
+				line.Position = new Vector2(x, y);
+				y += line.Size.Y;
+			}
 		}
-
-		return new Vector2(width, height) / CurrentLayout.FontScale;
+		void RightAlignLines()
+		{
+			float x = Position.X + Size.X - CurrentLayout.PaddingRight;
+			float y = Position.Y + CurrentLayout.PaddingTop;
+			foreach (var line in _lines)
+			{
+				line.Position = new Vector2(x - line.Size.X, y);
+				y += line.Size.Y;
+			}
+		}
+		void CenterAlignLines()
+		{
+			float y = Position.Y + CurrentLayout.PaddingTop;
+			float w = 0;
+			foreach (var line in _lines)
+			{
+				w = (Size.X - line.Size.X) / 2f;
+				line.Position = new Vector2(Position.X + w, y);
+				y += line.Size.Y;
+			}
+		}
+		void TopAlignLines()
+		{
+			float y = Position.Y + CurrentLayout.PaddingTop;
+			foreach (var line in _lines)
+			{
+				line.Position.Y = y;
+				y += line.Size.Y;
+			}
+		}
+		void MiddleAlignLines()
+		{
+			float y = Position.Y + ((Size.Y - TextSize!.Value.Y) / 2f);
+			foreach (var line in _lines)
+			{
+				line.Position.Y = y;
+				y += line.Size.Y;
+			}
+		}
+		void BottomAlignLines()
+		{
+			float y = Position.Y + Size.Y - CurrentLayout.PaddingBottom - TextSize!.Value.Y;
+			foreach (var line in _lines)
+			{
+				line.Position.Y = y;
+				y += line.Size.Y;
+			}
+		}
 	}
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
 	{
-		if (TextGetter != null)
-			Text = TextGetter();
-
 		if (string.IsNullOrEmpty(Text))
 			return;
 
