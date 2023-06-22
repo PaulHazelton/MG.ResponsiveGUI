@@ -46,7 +46,13 @@ public class Label : GuiElement
 		if (string.IsNullOrEmpty(Text))
 			return;
 
-		// TODO: If text has changed, font size has changed, or bounding box (position or size) has changed, call the next three functions
+		// TODO:
+		// If: text has changed ||
+		// current layout has meaningfully changed* (font, font scale, padding, wrap mode, text align, any positioning) ||
+		// bounding box (position or size) has changed
+		// Then: call the next three functions
+		// Note*: If the layout has changed, then RectangleCompute will get called again, so this consideration will not be relevant when that happens.
+
 		CreateLines();
 		ComputeTotalTextSize();
 		AlignLines();
