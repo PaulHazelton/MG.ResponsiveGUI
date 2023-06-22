@@ -27,12 +27,16 @@ public class Label : GuiElement
 	{
 		Text = text;
 		_lines = new Line[0];
+
+		ComputeText();
 	}
 	public Label(Layout? layout, Func<string> textGetter) : base(layout)
 	{
 		TextGetter = textGetter;
 		Text = textGetter();
 		_lines = new Line[0];
+
+		ComputeText();
 	}
 
 	protected override void OnUpdate(GameTime gameTime)
@@ -50,9 +54,14 @@ public class Label : GuiElement
 		// If: text has changed ||
 		// current layout has meaningfully changed* (font, font scale, padding, wrap mode, text align, any positioning) ||
 		// bounding box (position or size) has changed
-		// Then: call the next three functions
+		// Then: call ComputeText
 		// Note*: If the layout has changed, then RectangleCompute will get called again, so this consideration will not be relevant when that happens.
 
+		ComputeText();
+	}
+
+	private void ComputeText()
+	{
 		CreateLines();
 		ComputeTotalTextSize();
 		AlignLines();

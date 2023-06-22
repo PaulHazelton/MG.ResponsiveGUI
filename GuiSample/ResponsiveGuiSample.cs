@@ -456,6 +456,7 @@ public class ResponsiveGuiSample : Game
 			_body.Unfocus();
 		_body.ResetAllTransitions();
 		_body = newElement;
+		_body.Refresh();
 	}
 
 	private void WindowSizeChanged()

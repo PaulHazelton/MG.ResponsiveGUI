@@ -45,7 +45,7 @@ public class RootGuiElement : GuiElement
 		PropogateUpdate(gameTime, mouse, true, didMouseMove);
 		Refresh();
 	}
-	private void Refresh()
+	public void Refresh()
 	{
 		ComputeDimensions();
 		UpdateRectangles();
