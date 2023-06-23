@@ -9,6 +9,8 @@ namespace BrokenH.MG.ResponsiveGui.Elements;
 
 public class Slider : GuiElement
 {
+	public static float NudgeIncrement = 0.1f;
+
 	// Range and value
 	private float _min;
 	private float _max;
@@ -18,8 +20,11 @@ public class Slider : GuiElement
 		get => _value;
 		set
 		{
-			_value = value;
-			_setValue?.Invoke(value);
+			if (_value != value)
+			{
+				_value = value;
+				_setValue?.Invoke(value);
+			}
 		}
 	}
 	private Action<float> _setValue;
@@ -27,6 +32,7 @@ public class Slider : GuiElement
 	// Dragging
 	private bool _isDragging;
 
+	// Sub elements
 	private Layout _handleContainerLayout;
 	private Container _handleContainer;
 	private Button _handle;
@@ -50,7 +56,7 @@ public class Slider : GuiElement
 		_value = initialValue;
 		_setValue = valueSetter;
 		_handleContainer = new Container(_handleContainerLayout);
-		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle);
+		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle, NudgeSlider);
 
 		_handleContainer.AddChild(_handle);
 		AddChild(_handleContainer);
@@ -63,14 +69,6 @@ public class Slider : GuiElement
 
 		if (buttonState == ButtonState.Released)
 			_isDragging = false;
-	}
-	private void ClickSliderOrHandle(ButtonState buttonState)
-	{
-		if (buttonState == ButtonState.Pressed)
-		{
-			_isDragging = true;
-			Value = GetValue();
-		}
 	}
 
 	protected override void OnUpdate(GameTime gameTime)
@@ -96,6 +94,33 @@ public class Slider : GuiElement
 			UiPrimitiveDrawer.DrawRectangle(spriteBatch, foregroundRec, CurrentLayout.ForegroundColor);
 	}
 
+	private bool NudgeSlider(UIDirection d, UISide s)
+	{
+		if (d == UIDirection.Vertical)
+			return false;
+
+		var oldValue = Value;
+
+		if (s == UISide.Start)
+			Value -= NudgeIncrement * (_max - _min);
+		else
+			Value += NudgeIncrement * (_max - _min);
+
+		Value = MathHelper.Clamp(Value, _min, _max);
+
+		// If value changed, focus was consumed
+		return (Value != oldValue);
+	}
+
+	private void ClickSliderOrHandle(ButtonState buttonState)
+	{
+		if (buttonState == ButtonState.Pressed)
+		{
+			_isDragging = true;
+			Value = GetValue();
+		}
+	}
+
 	private float GetPercentage()
 	{
 		return (Value - _min) / (_max - _min);
@@ -111,11 +136,15 @@ public class Slider : GuiElement
 	internal class SliderHandle : Button
 	{
 		private Action<ButtonState> _clickCallback;
+		private Func<UIDirection, UISide, bool> _focusChangeCallback;
 
 
-		internal SliderHandle(Layout? layout, Action<ButtonState> clickCallback) : base(layout)
+		internal SliderHandle(Layout? layout, Action<ButtonState> clickCallback, Func<UIDirection, UISide, bool> focusChangeCallback)
+			: base(layout)
 		{
 			_clickCallback = clickCallback;
+			_focusChangeCallback = focusChangeCallback;
+			OverrideFocusChange = true;
 		}
 
 		protected override void OnMouseEvent(byte mouseButton, ButtonState buttonState)
@@ -130,6 +159,11 @@ public class Slider : GuiElement
 				else
 					State = ElementStates.Neutral;
 			}
+		}
+
+		public override bool ConsumeFocus(UIDirection d, UISide s)
+		{
+			return _focusChangeCallback(d, s);
 		}
 	}
 }
