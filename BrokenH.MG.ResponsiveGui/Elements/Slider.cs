@@ -27,18 +27,33 @@ public class Slider : GuiElement
 	// Dragging
 	private bool _isDragging;
 
-	private Button _handle { get; set; }
+	private Layout _handleContainerLayout;
+	private Container _handleContainer;
+	private Button _handle;
 
 
 	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float initialValue, Action<float> valueSetter)
 	: base(sliderLayout)
 	{
+		_handleContainerLayout = new Layout()
+		{
+			PositionMode = PositionMode.Relative,
+			LeftUnit = LayoutUnit.Pixels,
+			Width = 0,
+			Height = 0,
+			AlignItems = AlignItems.Center,
+			JustifyContent = JustifyContent.Center
+		};
+
 		_min = min;
 		_max = max;
-		Value = initialValue;
+		_value = initialValue;
 		_setValue = valueSetter;
+		_handleContainer = new Container(_handleContainerLayout);
 		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle);
-		AddChild(_handle);
+
+		_handleContainer.AddChild(_handle);
+		AddChild(_handleContainer);
 	}
 
 	protected override void OnMouseEvent(byte button, ButtonState buttonState)
@@ -63,23 +78,12 @@ public class Slider : GuiElement
 		if (_isDragging)
 		{
 			Value = GetValue();
-			// Don't un-activate on drag
+			// Don't un-activate when mouse goes above or below slider handle
 			_handle.State = ElementStates.Activated;
 		}
 
-		// TODO find a better way to do this
-		var handleLayout = _handle.Layout;
-
-		handleLayout.PositionMode = PositionMode.Relative;
-		handleLayout.LeftUnit = LayoutUnit.Pixels;
-		handleLayout.Left = (GetPercentage() * BoundingRectangle.Width) - (_handle.BoundingRectangle.Width / 2.0f);
-
-		foreach (var layout in handleLayout.SubLayouts)
-		{
-			layout.Value.PositionMode = PositionMode.Relative;
-			layout.Value.LeftUnit = LayoutUnit.Pixels;
-			layout.Value.Left = (GetPercentage() * BoundingRectangle.Width) - (_handle.BoundingRectangle.Width / 2.0f);
-		}
+		var handleContainerLayout = _handleContainer.Layout;
+		handleContainerLayout.Left = (GetPercentage() * BoundingRectangle.Width);
 	}
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
@@ -104,12 +108,12 @@ public class Slider : GuiElement
 		return MathHelper.Clamp(MathHelper.Lerp(_min, _max, proportion), _min, _max);
 	}
 
-	public class SliderHandle : Button
+	internal class SliderHandle : Button
 	{
 		private Action<ButtonState> _clickCallback;
 
 
-		public SliderHandle(Layout? layout, Action<ButtonState> clickCallback) : base(layout)
+		internal SliderHandle(Layout? layout, Action<ButtonState> clickCallback) : base(layout)
 		{
 			_clickCallback = clickCallback;
 		}
