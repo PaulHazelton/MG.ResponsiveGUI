@@ -133,6 +133,7 @@ public class Slider : GuiElement
 		return MathHelper.Clamp(MathHelper.Lerp(_min, _max, proportion), _min, _max);
 	}
 
+
 	internal class SliderHandle : Button
 	{
 		private Action<ButtonState> _clickCallback;
@@ -161,9 +162,6 @@ public class Slider : GuiElement
 			}
 		}
 
-		public override bool ConsumeFocus(UIDirection d, UISide s)
-		{
-			return _focusChangeCallback(d, s);
-		}
+		public override bool ConsumeFocus(UIDirection d, UISide s) => _focusChangeCallback(d, s);
 	}
 }
