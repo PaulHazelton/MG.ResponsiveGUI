@@ -9,16 +9,16 @@ namespace BrokenH.MG.ResponsiveGui.Elements;
 
 public class Slider : GuiElement
 {
-	public static float NudgeIncrement = 0.1f;
+	public float NudgeIncrement { get; set; } = 0.1f;
 
 	// Range and value
 	private float _min;
 	private float _max;
 	private float _value;
-	private float Value
+	public float Value
 	{
 		get => _value;
-		set
+		private set
 		{
 			if (_value != value)
 			{

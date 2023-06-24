@@ -6,7 +6,7 @@ namespace BrokenH.MG.ResponsiveGui.Styles;
 
 public class LayoutTransitioner
 {
-	private Layout _mainLayout;
+	internal Layout MainLayout { get; set; }
 	private double _elapsedTime;
 
 	private string _currentState = ElementStates.Neutral;
@@ -27,7 +27,7 @@ public class LayoutTransitioner
 
 	public LayoutTransitioner(Layout layout)
 	{
-		_mainLayout = layout;
+		MainLayout = layout;
 	}
 
 	public Layout Update(GameTime gameTime, string state, Layout oldLayout)
@@ -35,7 +35,7 @@ public class LayoutTransitioner
 		State = state;
 
 		// Setup variables
-		var newLayout = _mainLayout.GetLayoutFromState(_currentState);
+		var newLayout = MainLayout.GetLayoutFromState(_currentState);
 		var transition = newLayout.Transition;
 
 		// Conditions
@@ -60,7 +60,7 @@ public class LayoutTransitioner
 	public void Reset(string state = ElementStates.Neutral)
 	{
 		State = state;
-		_mainLayout.GetLayoutFromState(State).Animation?.Reset();
+		MainLayout.GetLayoutFromState(State).Animation?.Reset();
 	}
 
 	#region Private / Internal Helper Functions
