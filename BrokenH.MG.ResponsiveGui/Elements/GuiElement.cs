@@ -1040,6 +1040,7 @@ public abstract class GuiElement : IDisposable
 	protected virtual void AfterRectangleCompute() { }
 	protected virtual void OnDispose() { }
 
+	// TODO: Figure out how to make this protected. Maybe use something like OnFocusChange or OnConsumeFocus
 	public virtual bool ConsumeFocus(UIDirection d, UISide s) => false;
 
 	#endregion

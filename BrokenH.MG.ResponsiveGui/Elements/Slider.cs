@@ -81,14 +81,38 @@ public class Slider : GuiElement
 		}
 
 		var handleContainerLayout = _handleContainer.Layout;
-		handleContainerLayout.Left = (GetPercentage() * BoundingRectangle.Width);
+
+		var proportion = GetPercentage();
+
+		if (Layout.JustifyContent == JustifyContent.FlexEnd)
+			proportion = -proportion;
+
+		if (Layout.FlexDirection == FlexDirection.Row)
+			handleContainerLayout.Left = (proportion * BoundingRectangle.Width);
+		else
+			handleContainerLayout.Top = (proportion * BoundingRectangle.Height);
 	}
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
 	{
-		// Draw Foreground as a percentage of width
 		var foregroundRec = BoundingRectangle;
-		foregroundRec.Width = (int)(BoundingRectangle.Width * GetPercentage());
+
+		var proportion = GetPercentage();
+		// if (Layout.JustifyContent == JustifyContent.FlexEnd)
+		// 	proportion = 1 - proportion;
+
+		if (Layout.FlexDirection == FlexDirection.Row)
+			foregroundRec.Width = (int)(BoundingRectangle.Width * proportion);
+		else
+			foregroundRec.Height = (int)(BoundingRectangle.Height * proportion);
+
+		if (Layout.JustifyContent == JustifyContent.FlexEnd)
+		{
+			if (Layout.FlexDirection == FlexDirection.Row)
+				foregroundRec.X += BoundingRectangle.Width - foregroundRec.Width;
+			else
+				foregroundRec.Y += BoundingRectangle.Height - foregroundRec.Height;
+		}
 
 		if (CurrentLayout.ForegroundColor != Color.Transparent)
 			UiPrimitiveDrawer.DrawRectangle(spriteBatch, foregroundRec, CurrentLayout.ForegroundColor);
@@ -96,15 +120,21 @@ public class Slider : GuiElement
 
 	private bool NudgeSlider(UIDirection d, UISide s)
 	{
-		if (d == UIDirection.Vertical)
+		if (!Layout.FlexDirection.IsParallelWith(d))
 			return false;
 
 		var oldValue = Value;
+		float difference;
 
-		if (s == UISide.Start)
-			Value -= NudgeIncrement * (_max - _min);
+		if (s == UISide.End)
+			difference = NudgeIncrement * (_max - _min);
 		else
-			Value += NudgeIncrement * (_max - _min);
+			difference = -NudgeIncrement * (_max - _min);
+
+		if (Layout.JustifyContent == JustifyContent.FlexEnd)
+			difference *= -1;
+
+		Value += difference;
 
 		Value = MathHelper.Clamp(Value, _min, _max);
 
@@ -128,8 +158,16 @@ public class Slider : GuiElement
 
 	private float GetValue()
 	{
-		float x = Mouse.GetState().Position.X - BoundingRectangle.X;
-		float proportion = x / BoundingRectangle.Width;
+		float proportion = Layout.FlexDirection switch
+		{
+			FlexDirection.Row => (Mouse.GetState().Position.X - BoundingRectangle.X) / (float)BoundingRectangle.Width,
+			FlexDirection.Column => (Mouse.GetState().Position.Y - BoundingRectangle.Y) / (float)BoundingRectangle.Height,
+			_ => 0
+		};
+
+		if (Layout.JustifyContent == JustifyContent.FlexEnd)
+			proportion = 1 - proportion;
+
 		return MathHelper.Clamp(MathHelper.Lerp(_min, _max, proportion), _min, _max);
 	}
 

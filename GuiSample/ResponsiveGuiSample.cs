@@ -235,11 +235,12 @@ public class ResponsiveGuiSample : Game
 		var formSlider = new Layout()
 		{
 			Width_ = "55%",
-			Height = 20,
+			Height = 200,
 			ForegroundColor = new Color(250, 120, 0),
 			BackgroundColor = darkGray,
 
 			FlexDirection = FlexDirection.Row,
+			JustifyContent = JustifyContent.FlexStart,
 			AlignItems = AlignItems.Center,
 		};
 		var sliderHandle = new Layout()
