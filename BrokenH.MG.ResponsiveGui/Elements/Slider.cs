@@ -15,10 +15,10 @@ public class Slider : GuiElement
 	private float _min;
 	private float _max;
 	private float _value;
-	private float Value
+	public float Value
 	{
 		get => _value;
-		set
+		private set
 		{
 			if (_value != value)
 			{

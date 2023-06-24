@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using BrokenH.MG.ResponsiveGui.Styles;
 using BrokenH.MG.ResponsiveGui.Common;
 using BrokenH.MG.ResponsiveGui.Rendering;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BrokenH.MG.ResponsiveGui.Elements;
 
@@ -258,7 +259,17 @@ public abstract class GuiElement : IDisposable
 	public bool DidMouseMove { get; private set; }
 
 	// Layout
-	public Layout Layout { get; set; }
+	private Layout _layout;
+	public Layout Layout
+	{
+		get => _layout;
+		[MemberNotNull(nameof(_layout))]
+		set
+		{
+			_layout = value;
+			_layoutTransitioner.MainLayout = value;
+		}
+	}
 	private Layout _oldLayout;
 	private Layout _currentLayout;
 	public Layout CurrentLayout => _currentLayout;
@@ -330,7 +341,7 @@ public abstract class GuiElement : IDisposable
 	public GuiElement(Layout? layout = null)
 	{
 		_children = new List<GuiElement>();
-		Layout = layout ?? new Layout();
+		_layout = layout ?? new Layout();
 		_currentLayout = Layout;
 		_oldLayout = Layout;
 

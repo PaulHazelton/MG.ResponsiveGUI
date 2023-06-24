@@ -277,40 +277,40 @@ public class ResponsiveGuiSample : Game
 			BackgroundColor = Color.Transparent,
 			BorderColor = Color.White,
 			BorderThickness = 4,
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 		checkbox[ElementStates.Hovered] = new Layout(checkbox)
 		{
 			BorderColor = Color.Cyan,
 			Transform = Matrix.CreateScale(1.2f),
-			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+			Transition = new Transition(0.2d, TimingFunction.EaseOutCubic),
 		};
 		checkbox[ElementStates.Activated] = new Layout(checkbox)
 		{
 			BorderColor = Color.Cyan,
 			BackgroundColor = Color.Cyan,
 			Transform = Matrix.Identity,
-			Transition = new Transition(0.07d, TimingFunction.EaseOutCubic),
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 		var checkboxChecked = new Layout(checkbox)
 		{
 			BorderColor = Color.White,
 			BackgroundColor = Color.White,
-
-			MarginLeft = 40,
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 		checkboxChecked[ElementStates.Hovered] = new Layout(checkboxChecked)
 		{
 			BorderColor = Color.Cyan,
 			BackgroundColor = Color.Cyan,
 			Transform = Matrix.CreateScale(1.2f),
-			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+			Transition = new Transition(0.2d, TimingFunction.EaseOutCubic),
 		};
 		checkboxChecked[ElementStates.Activated] = new Layout(checkboxChecked)
 		{
 			BorderColor = Color.Cyan,
 			BackgroundColor = Color.Transparent,
 			Transform = Matrix.Identity,
-			Transition = new Transition(0.07d, TimingFunction.EaseOutCubic),
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 
 
@@ -374,8 +374,9 @@ public class ResponsiveGuiSample : Game
 					)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Debug Borders"))
-						.AddChild(new Button(checkbox))
-						.AddChild(new Button(checkboxChecked))
+						.AddChild(new Checkbox(checkbox, checkboxChecked, ElementRenderer.DrawDebugBorders, (value) => ElementRenderer.DrawDebugBorders = value))
+						// .AddChild(new Button(checkbox))
+						// .AddChild(new Button(checkboxChecked))
 						.AddChild(new Label(valueIndicator, () => ElementRenderer.DrawDebugBorders.ToString()))
 					)
 				)
