@@ -239,7 +239,8 @@ public class ResponsiveGuiSample : Game
 			ForegroundColor = new Color(250, 120, 0),
 			BackgroundColor = darkGray,
 
-			FlexDirection = FlexDirection.Column,
+			FlexDirection = FlexDirection.Row,
+			JustifyContent = JustifyContent.FlexStart,
 			AlignItems = AlignItems.Center,
 		};
 		var sliderHandle = new Layout()
