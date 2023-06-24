@@ -220,9 +220,10 @@ public class ResponsiveGuiSample : Game
 		var formRowLayout = new Layout()
 		{
 			FlexDirection = FlexDirection.Row,
-			JustifyContent = JustifyContent.SpaceBetween,
+			JustifyContent = JustifyContent.FlexStart,
 			AlignItems = AlignItems.Center,
 			Width_ = "100%",
+			Height = 90,
 		};
 		var formLabel = new Layout()
 		{
@@ -232,10 +233,11 @@ public class ResponsiveGuiSample : Game
 			PaddingLeft = 20,
 			TextAlign = TextAlign.Left,
 		};
+
 		var formSlider = new Layout()
 		{
-			Width_ = "55%",
-			Height = 200,
+			Width_ = "50%",
+			Height = 20,
 			ForegroundColor = new Color(250, 120, 0),
 			BackgroundColor = darkGray,
 
@@ -256,20 +258,70 @@ public class ResponsiveGuiSample : Game
 		sliderHandle[ElementStates.Hovered] = new Layout(sliderHandle)
 		{
 			// BackgroundColor = new Color(80, 80, 80),
-			// BorderColor = new Color(80, 80, 80),\
+			// BorderColor = new Color(80, 80, 80),
 			BorderColor = Color.Cyan,
+			Transform = Matrix.CreateScale(1.2f),
 			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
 		};
 		sliderHandle[ElementStates.Activated] = new Layout(sliderHandle[ElementStates.Hovered])
 		{
 			BorderColor = Color.OrangeRed,
+			Transform = Matrix.Identity,
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
-		var sliderNumber = new Layout()
+
+		var checkbox = new Layout()
 		{
-			Width_ = "10%",
+			Width = 40,
+			Height = 40,
+			BackgroundColor = Color.Transparent,
+			BorderColor = Color.White,
+			BorderThickness = 4,
+		};
+		checkbox[ElementStates.Hovered] = new Layout(checkbox)
+		{
+			BorderColor = Color.Cyan,
+			Transform = Matrix.CreateScale(1.2f),
+			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+		};
+		checkbox[ElementStates.Activated] = new Layout(checkbox)
+		{
+			BorderColor = Color.Cyan,
+			BackgroundColor = Color.Cyan,
+			Transform = Matrix.Identity,
+			Transition = new Transition(0.07d, TimingFunction.EaseOutCubic),
+		};
+		var checkboxChecked = new Layout(checkbox)
+		{
+			BorderColor = Color.White,
+			BackgroundColor = Color.White,
+
+			MarginLeft = 40,
+		};
+		checkboxChecked[ElementStates.Hovered] = new Layout(checkboxChecked)
+		{
+			BorderColor = Color.Cyan,
+			BackgroundColor = Color.Cyan,
+			Transform = Matrix.CreateScale(1.2f),
+			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+		};
+		checkboxChecked[ElementStates.Activated] = new Layout(checkboxChecked)
+		{
+			BorderColor = Color.Cyan,
+			BackgroundColor = Color.Transparent,
+			Transform = Matrix.Identity,
+			Transition = new Transition(0.07d, TimingFunction.EaseOutCubic),
+		};
+
+
+		var valueIndicator = new Layout()
+		{
 			ForegroundColor = Color.White,
 			FontScale = 4,
+			Width_ = "10%",
+			Height_ = "100%",
+			Right = 0,
+			PositionMode = PositionMode.RelativeToParent
 		};
 
 		#endregion
@@ -318,7 +370,13 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
 						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, Volume, (value) => Volume = value))
-						.AddChild(new Label(sliderNumber, () => Volume.ToString("P0")))
+						.AddChild(new Label(valueIndicator, () => Volume.ToString("P0")))
+					)
+					.AddChild(new Container(formRowLayout)
+						.AddChild(new Label(formLabel, "Debug Borders"))
+						.AddChild(new Button(checkbox))
+						.AddChild(new Button(checkboxChecked))
+						.AddChild(new Label(valueIndicator, () => ElementRenderer.DrawDebugBorders.ToString()))
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
