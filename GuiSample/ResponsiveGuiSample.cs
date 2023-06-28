@@ -310,7 +310,6 @@ public class ResponsiveGuiSample : Game
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 
-
 		var valueIndicator = new Layout()
 		{
 			ForegroundColor = Color.White,
@@ -337,7 +336,6 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
-					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
 				)
 			)
@@ -508,8 +506,6 @@ public class ResponsiveGuiSample : Game
 
 		base.Draw(gameTime);
 	}
-
-	private void ToggleDebugBorders() => ElementRenderer.DrawDebugBorders = !ElementRenderer.DrawDebugBorders;
 
 	private void SwitchBody(RootGuiElement newElement)
 	{
