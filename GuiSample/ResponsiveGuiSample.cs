@@ -31,12 +31,6 @@ public class ResponsiveGuiSample : Game
 	private RootGuiElement _settings;
 	private RootGuiElement _grid;
 
-	// Settings
-	private float _masterVolume = 0.3f;
-
-	// Property to test slider
-	private float Volume = 0.3f;
-
 
 	public ResponsiveGuiSample()
 	{
@@ -50,7 +44,7 @@ public class ResponsiveGuiSample : Game
 		Content.RootDirectory = "Content";
 		TargetElapsedTime = System.TimeSpan.FromSeconds(1.0d / 144.0d);
 		IsMouseVisible = true;
-		SoundEffect.MasterVolume = _masterVolume;
+		SoundEffect.MasterVolume = 0.5f;
 	}
 	protected override void Initialize()
 	{
@@ -237,8 +231,9 @@ public class ResponsiveGuiSample : Game
 		var formSlider = new Layout()
 		{
 			Width_ = "50%",
+			MarginLeft = 20,
 			Height = 20,
-			ForegroundColor = new Color(250, 120, 0),
+			ForegroundColor = Color.Cyan,
 			BackgroundColor = darkGray,
 
 			FlexDirection = FlexDirection.Row,
@@ -254,6 +249,7 @@ public class ResponsiveGuiSample : Game
 			BackgroundColor = Color.Transparent,
 			BorderColor = Color.White,
 			BorderThickness = 4,
+			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 		sliderHandle[ElementStates.Hovered] = new Layout(sliderHandle)
 		{
@@ -261,11 +257,12 @@ public class ResponsiveGuiSample : Game
 			// BorderColor = new Color(80, 80, 80),
 			BorderColor = Color.Cyan,
 			Transform = Matrix.CreateScale(1.2f),
-			Transition = new Transition(0.4d, TimingFunction.EaseOutCubic),
+			Transition = new Transition(0.2d, TimingFunction.EaseOutCubic),
 		};
 		sliderHandle[ElementStates.Activated] = new Layout(sliderHandle[ElementStates.Hovered])
 		{
-			BorderColor = Color.OrangeRed,
+			BorderColor = Color.Cyan,
+			BackgroundColor = Color.Cyan,
 			Transform = Matrix.Identity,
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
@@ -313,7 +310,6 @@ public class ResponsiveGuiSample : Game
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
 
-
 		var valueIndicator = new Layout()
 		{
 			ForegroundColor = Color.White,
@@ -340,7 +336,6 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
-					.AddChild(new Button(buttonLayout, ToggleDebugBorders, "Toggle debug borders"))
 					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
 				)
 			)
@@ -363,21 +358,25 @@ public class ResponsiveGuiSample : Game
 		#endregion
 
 		#region Settings
+		bool uselessBool = false;
 		_settings
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Settings"))
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, Volume, (value) => Volume = value))
-						.AddChild(new Label(valueIndicator, () => Volume.ToString("P0")))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume, (value) => SoundEffect.MasterVolume = value))
+						.AddChild(new Label(valueIndicator, () => SoundEffect.MasterVolume.ToString("P0")))
 					)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Debug Borders"))
 						.AddChild(new Checkbox(checkbox, checkboxChecked, ElementRenderer.DrawDebugBorders, (value) => ElementRenderer.DrawDebugBorders = value))
-						// .AddChild(new Button(checkbox))
-						// .AddChild(new Button(checkboxChecked))
 						.AddChild(new Label(valueIndicator, () => ElementRenderer.DrawDebugBorders.ToString()))
+					)
+					.AddChild(new Container(formRowLayout)
+						.AddChild(new Label(formLabel, "Checkbox"))
+						.AddChild(new Checkbox(checkbox, checkboxChecked, uselessBool, (value) => uselessBool = value))
+						.AddChild(new Label(valueIndicator, () => uselessBool.ToString()))
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
@@ -507,8 +506,6 @@ public class ResponsiveGuiSample : Game
 
 		base.Draw(gameTime);
 	}
-
-	private void ToggleDebugBorders() => ElementRenderer.DrawDebugBorders = !ElementRenderer.DrawDebugBorders;
 
 	private void SwitchBody(RootGuiElement newElement)
 	{

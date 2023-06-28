@@ -9,7 +9,11 @@ public class Checkbox : Button
 	public bool Value
 	{
 		get => _value;
-		private set => _value = value;
+		private set
+		{
+			_value = value;
+			OnValueSet();
+		}
 	}
 
 	public Action<bool>? ValueSetter { get; set; }
@@ -33,7 +37,10 @@ public class Checkbox : Button
 		base.OnActivateRelease();
 
 		Value = !Value;
+	}
 
+	private void OnValueSet()
+	{
 		Layout = Value ? CheckedLayout : UncheckedLayout;
 
 		ValueSetter?.Invoke(Value);

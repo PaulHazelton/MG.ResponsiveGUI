@@ -385,25 +385,6 @@ public abstract class GuiElement : IDisposable
 		// Transition layouts
 		_currentLayout = _layoutTransitioner.Update(gameTime, State, _oldLayout);
 
-		// Handle Transforms
-		if (CurrentLayout.Transform != Matrix.Identity)
-		{
-			// _currentTransform = _currentLayout.Transform;
-			_currentTransform
-				= Matrix.CreateTranslation(new Vector3(-(new Vector2(
-					Position.X + Size.X / 2f,
-					Position.Y + Size.Y / 2f
-				)), 0f))
-				* _currentLayout.Transform
-				* Matrix.CreateTranslation(new Vector3((new Vector2(
-					Position.X + Size.X / 2f,
-					Position.Y + Size.Y / 2f
-				)), 0f))
-			;
-		}
-		else
-			_currentTransform = null;
-
 		// Handle mouse and scrolling
 		if (_currentTransform.HasValue)
 		{
@@ -744,7 +725,7 @@ public abstract class GuiElement : IDisposable
 
 	#region Resolve position and size of element tree
 
-	internal void ComputeDimensions()
+	private protected void ComputeDimensions()
 	{
 		_calculatedLeft = CalcPosition(UIDirection.Horizontal, UISide.Start);
 		_calculatedRight = CalcPosition(UIDirection.Horizontal, UISide.End);
@@ -999,12 +980,14 @@ public abstract class GuiElement : IDisposable
 			(int)(BoundingRectangle.Height - CurrentLayout.PaddingTop - CurrentLayout.PaddingBottom)
 		);
 
+		CalcTransform();
+
 		AfterRectangleCompute();
 
 		// Position children
 		UpdateChildRectangles();
 	}
-	protected void UpdateChildRectangles()
+	private void UpdateChildRectangles()
 	{
 		if (_children.Count == 0) return;
 
@@ -1024,6 +1007,27 @@ public abstract class GuiElement : IDisposable
 			child.UpdateRectangles(main, cross, CurrentLayout.FlexDirection);
 			main += child.CalculatedMainSize(CurrentLayout.FlexDirection) + gap;
 		}
+	}
+	private void CalcTransform()
+	{
+		// Handle Transforms
+		if (CurrentLayout.Transform != Matrix.Identity)
+		{
+			// _currentTransform = _currentLayout.Transform;
+			_currentTransform
+				= Matrix.CreateTranslation(new Vector3(-(new Vector2(
+					Position.X + Size.X / 2f,
+					Position.Y + Size.Y / 2f
+				)), 0f))
+				* _currentLayout.Transform
+				* Matrix.CreateTranslation(new Vector3((new Vector2(
+					Position.X + Size.X / 2f,
+					Position.Y + Size.Y / 2f
+				)), 0f))
+			;
+		}
+		else
+			_currentTransform = null;
 	}
 
 	#endregion

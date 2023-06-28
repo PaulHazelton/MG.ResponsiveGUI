@@ -20,10 +20,11 @@ public class Slider : GuiElement
 		get => _value;
 		private set
 		{
-			if (_value != value)
+			var newVal = MathHelper.Clamp(value, _min, _max);
+			if (_value != newVal)
 			{
-				_value = value;
-				_setValue?.Invoke(value);
+				_value = newVal;
+				_setValue?.Invoke(newVal);
 			}
 		}
 	}
@@ -75,7 +76,7 @@ public class Slider : GuiElement
 	{
 		if (_isDragging)
 		{
-			Value = GetValue();
+			ComputeValue();
 			// Don't un-activate when mouse goes above or below slider handle
 			_handle.State = ElementStates.Activated;
 		}
@@ -136,8 +137,6 @@ public class Slider : GuiElement
 
 		Value += difference;
 
-		Value = MathHelper.Clamp(Value, _min, _max);
-
 		// If value changed, focus was consumed
 		return (Value != oldValue);
 	}
@@ -147,7 +146,7 @@ public class Slider : GuiElement
 		if (buttonState == ButtonState.Pressed)
 		{
 			_isDragging = true;
-			Value = GetValue();
+			ComputeValue();
 		}
 	}
 
@@ -156,7 +155,7 @@ public class Slider : GuiElement
 		return (Value - _min) / (_max - _min);
 	}
 
-	private float GetValue()
+	private void ComputeValue()
 	{
 		float proportion = Layout.FlexDirection switch
 		{
@@ -168,7 +167,7 @@ public class Slider : GuiElement
 		if (Layout.JustifyContent == JustifyContent.FlexEnd)
 			proportion = 1 - proportion;
 
-		return MathHelper.Clamp(MathHelper.Lerp(_min, _max, proportion), _min, _max);
+		Value = MathHelper.Lerp(_min, _max, proportion);
 	}
 
 
