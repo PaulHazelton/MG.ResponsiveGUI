@@ -350,7 +350,6 @@ public class ResponsiveGuiSample : Game
 					.AddChild(new Label(wordWrapLayout, aboutText))
 				)
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
-					.AddChild(new Button(buttonLayout, null, "Button"))
 					.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
 				)
 			)

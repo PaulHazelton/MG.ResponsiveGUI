@@ -9,12 +9,9 @@ namespace BrokenH.MG.ResponsiveGui.Elements;
 
 public class Slider : GuiElement
 {
+	public static float NudgeLerpSpeed = 12f;
 	public float NudgeIncrement { get; set; } = 0.1f;
 
-	// Range and value
-	private float _min;
-	private float _max;
-	private float _value;
 	public float Value
 	{
 		get => _value;
@@ -28,6 +25,13 @@ public class Slider : GuiElement
 			}
 		}
 	}
+
+	// Range and value
+	private float _min;
+	private float _max;
+	private float _value;
+	private float _valueTarget;
+
 	private Action<float> _setValue;
 
 	// Dragging
@@ -55,6 +59,7 @@ public class Slider : GuiElement
 		_min = min;
 		_max = max;
 		_value = initialValue;
+		_valueTarget = initialValue;
 		_setValue = valueSetter;
 		_handleContainer = new Container(_handleContainerLayout);
 		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle, NudgeSlider);
@@ -79,6 +84,11 @@ public class Slider : GuiElement
 			ComputeValue();
 			// Don't un-activate when mouse goes above or below slider handle
 			_handle.State = ElementStates.Activated;
+		}
+		else
+		{
+			// Lerp value to target
+			Value = MathHelper.Lerp(Value, _valueTarget, (float)(NudgeLerpSpeed * gameTime.ElapsedGameTime.TotalSeconds));
 		}
 
 		var handleContainerLayout = _handleContainer.Layout;
@@ -124,7 +134,7 @@ public class Slider : GuiElement
 		if (!Layout.FlexDirection.IsParallelWith(d))
 			return false;
 
-		var oldValue = Value;
+		var oldValue = _valueTarget;
 		float difference;
 
 		if (s == UISide.End)
@@ -135,10 +145,10 @@ public class Slider : GuiElement
 		if (Layout.JustifyContent == JustifyContent.FlexEnd)
 			difference *= -1;
 
-		Value += difference;
+		_valueTarget = MathHelper.Clamp(_valueTarget + difference, _min, _max);
 
 		// If value changed, focus was consumed
-		return (Value != oldValue);
+		return (_valueTarget != oldValue);
 	}
 
 	private void ClickSliderOrHandle(ButtonState buttonState)
@@ -168,6 +178,7 @@ public class Slider : GuiElement
 			proportion = 1 - proportion;
 
 		Value = MathHelper.Lerp(_min, _max, proportion);
+		_valueTarget = Value;
 	}
 
 
