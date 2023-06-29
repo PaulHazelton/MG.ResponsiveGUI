@@ -53,14 +53,25 @@ public class ResponsiveGuiSample : Game
 	}
 	protected override void LoadContent()
 	{
-		var aboutText = "What the heck did you just frickin' say about me, you little whiner? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills."
-			+ " I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces.You are nothing to me but just another target. I will wipe you the frick out with precision the likes of which has never been seen before on this Earth, mark my frickin' words.You think you can get away with saying that crap to me over the Internet?"
-			+ " Think again, buddy. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, buddy."
+		var aboutText
+			= "Welcome to MGResponsiveGui! This package lets you create GUIs in a similar fashion to using HTML and CSS to create web pages."
+			+ " The Layout class allows you to position elements using most of the same functionality availible in css, allowing you to easily create game menus that work on many different size screens."
+			+ " You can use Transitions and Animations make your Menus just like you can with css!"
+			+ " Basic web style concepts are supported such as scrolling (not just text, but entire element subtrees), text wrap, interacting using a gamepad (try the arrow keys and enter!), and even sounds!"
+			+ " Some basic form elements are built in: containers, labels, buttons, checkboxes, and sliders."
+			+ " I plan on creating more basic elements in the future, such as: text boxes, drop downs, and rich text in labels."
+			+ "\n\n"
+			+ "As of now, this has only been tested with SamplerState.PointClamp and a pixel art font and style, and BlendState cannot be specified."
+			+ "\n\n"
+			+ "Allowing more flexibility with SamplerState and BlendState, is planned for the future."
+			+ " To see other plans for this package, check out the issues page on github!"
 		;
 
 		// Load content
-		var font = Content.Load<SpriteFont>("pixelFont");
-		Layout.Initialize(font);
+		var pixelFont = Content.Load<SpriteFont>("pixelFont");
+		// var titleFont = Content.Load<SpriteFont>("TitleFont");
+		// var arialFont = Content.Load<SpriteFont>("Arial");
+		Layout.Initialize(pixelFont);
 		GuiElement.Initialize(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
 		var itemFrame = new NineSliceAsset(Content.Load<Texture2D>("MenuItemFrame"), LoadJson<NineSliceSpec>("MenuItemFrame.json"));
@@ -98,11 +109,10 @@ public class ResponsiveGuiSample : Game
 		};
 		var headingLayout = new Layout()
 		{
+			FontScale = 12,
 			ForegroundColor = Color.White,
-			// Height = 64,
 			TextAlign = TextAlign.Center,
 			Padding2 = (-30, 8),
-			FontScale = 12,
 		};
 		var scrollingButtonContainer = new Layout()
 		{
@@ -167,12 +177,13 @@ public class ResponsiveGuiSample : Game
 		};
 		buttonLayout[ElementStates.Hovered] = new Layout(buttonLayout)
 		{
-			BackgroundColor = new Color(80, 80, 80),
+			BackgroundColor = darkGray,
 			Width_ = "100%",
 		};
 		buttonLayout[ElementStates.Activated] = new Layout(buttonLayout[ElementStates.Hovered])
 		{
-			BackgroundColor = Color.White,
+			Width_ = "90%",
+			BackgroundColor = Color.Cyan,
 			ForegroundColor = Color.Black,
 			Transition = new Transition(0.1d, TimingFunction.EaseOutCubic),
 		};
@@ -223,14 +234,14 @@ public class ResponsiveGuiSample : Game
 		{
 			ForegroundColor = Color.White,
 			FontScale = 6,
-			Width_ = "35%",
+			Width_ = "45%",
 			PaddingLeft = 20,
 			TextAlign = TextAlign.Left,
 		};
 
 		var formSlider = new Layout()
 		{
-			Width_ = "50%",
+			Width_ = "40%",
 			MarginLeft = 20,
 			Height = 20,
 			ForegroundColor = Color.Cyan,
@@ -492,8 +503,6 @@ public class ResponsiveGuiSample : Game
 	protected override void Draw(GameTime gameTime)
 	{
 		GraphicsDevice.Clear(Color.Black);
-
-		// var menuTexture =_body.Draw(_spriteBatch, SamplerState.PointClamp);
 
 		_spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,

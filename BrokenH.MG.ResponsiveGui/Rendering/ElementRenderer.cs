@@ -40,14 +40,14 @@ public class ElementRenderer
 		// 	RenderTargets[i] = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 	}
 
-	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState, RootGuiElement rootElement) => Draw(spriteBatch, rootElement, Matrix.Identity, new Rectangle(0, 0, _screenWidth, _screenHeight));
-	private void Draw(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
+	public void Draw(SpriteBatch spriteBatch, SamplerState? samplerState, RootGuiElement rootElement) => Draw(spriteBatch, samplerState, rootElement, Matrix.Identity, new Rectangle(0, 0, _screenWidth, _screenHeight));
+	private void Draw(SpriteBatch spriteBatch, SamplerState? samplerState, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
 	{
 		// Simple draw
 		if (!e.CurrentLayout.RequiresComplicatedDraw || _graphicsDevice == null)
 		{
 			DrawThisElement(spriteBatch, e);
-			DrawChildren(spriteBatch, e, previousTransform, previousClipping);
+			DrawChildren(spriteBatch, samplerState, e, previousTransform, previousClipping);
 			return;
 		}
 
@@ -71,7 +71,7 @@ public class ElementRenderer
 		spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.NonPremultiplied,
-			samplerState: SamplerState.PointClamp,
+			samplerState: samplerState,
 			rasterizerState: rasterState,
 			transformMatrix: nextTransform
 		);
@@ -82,11 +82,11 @@ public class ElementRenderer
 		spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.NonPremultiplied,
-			samplerState: SamplerState.PointClamp,
+			samplerState: samplerState,
 			rasterizerState: rasterState,
 			transformMatrix: nextTransform
 		);
-		DrawChildren(spriteBatch, e, nextTransform, nextClipping);
+		DrawChildren(spriteBatch, samplerState, e, nextTransform, nextClipping);
 
 		spriteBatch.End();
 
@@ -95,7 +95,7 @@ public class ElementRenderer
 		spriteBatch.Begin(
 			sortMode: SpriteSortMode.Deferred,
 			blendState: BlendState.NonPremultiplied,
-			samplerState: SamplerState.PointClamp,
+			samplerState: samplerState,
 			rasterizerState: previousRaster,
 			transformMatrix: previousTransform
 		);
@@ -174,11 +174,11 @@ public class ElementRenderer
 			_uiPrimitiveDrawer.DrawRectangleOutline(spriteBatch, e.InnerRectangle, DebugInnerColor, 1, 0.5f);
 		}
 	}
-	private void DrawChildren(SpriteBatch spriteBatch, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
+	private void DrawChildren(SpriteBatch spriteBatch, SamplerState? samplerState, GuiElement e, Matrix previousTransform, Rectangle previousClipping)
 	{
 		// Draw children
 		foreach (var child in e._children)
-			Draw(spriteBatch, child, previousTransform, previousClipping);
+			Draw(spriteBatch, samplerState, child, previousTransform, previousClipping);
 	}
 
 	// private List<RenderTarget2D> RenderTargets;
