@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokenH.MG.ResponsiveGui", "BrokenH.MG.ResponsiveGui\BrokenH.MG.ResponsiveGui.csproj", "{0A4B6F10-A283-4FC3-80EE-713D432BDFAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veedja.MG.ResponsiveGui", "Veedja.MG.ResponsiveGui\Veedja.MG.ResponsiveGui.csproj", "{0A4B6F10-A283-4FC3-80EE-713D432BDFAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiSample", "GuiSample\GuiSample.csproj", "{2EE64147-FC2A-49B9-9936-5F5B3D3E9199}"
 EndProject

@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BrokenH.MG.ResponsiveGui\BrokenH.MG.ResponsiveGui.csproj" />
+    <ProjectReference Include="..\Veedja.MG.ResponsiveGui\Veedja.MG.ResponsiveGui.csproj" />
   </ItemGroup>
   
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

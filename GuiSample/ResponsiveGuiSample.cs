@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Text.Json;
-using BrokenH.MG.ResponsiveGui.Common;
-using BrokenH.MG.ResponsiveGui.Elements;
-using BrokenH.MG.ResponsiveGui.Rendering;
-using BrokenH.MG.ResponsiveGui.Styles;
+using Veedja.MG.ResponsiveGui.Common;
+using Veedja.MG.ResponsiveGui.Elements;
+using Veedja.MG.ResponsiveGui.Rendering;
+using Veedja.MG.ResponsiveGui.Styles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
