@@ -3,12 +3,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Veedja.MG.ResponsiveGui</PackageId>
-    <Version>0.1.0</Version>
+    <PackageVersion>0.1.0</PackageVersion>
     <Authors>Paul Hazelton</Authors>
     <Company>Veedja Games</Company>
     <Title>Veedja - MonoGame Responsive GUI</Title>
