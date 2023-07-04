@@ -6,12 +6,12 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "BrokenH.MG.ResponsiveGui/0.1.0": {
+      "Veedja.MG.ResponsiveGui/0.1.0": {
         "dependencies": {
           "MonoGame.Framework.DesktopGL": "3.8.0.1641"
         },
         "runtime": {
-          "BrokenH.MG.ResponsiveGui.dll": {}
+          "Veedja.MG.ResponsiveGui.dll": {}
         }
       },
       "MonoGame.Framework.DesktopGL/3.8.0.1641": {
@@ -67,7 +67,7 @@
     }
   },
   "libraries": {
-    "BrokenH.MG.ResponsiveGui/0.1.0": {
+    "Veedja.MG.ResponsiveGui/0.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
