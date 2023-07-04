@@ -7,7 +7,7 @@
 			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/GuiSample/GuiSample.csproj",
+				"${workspaceFolder}/Veedja.MG.ResponsiveGui.Sample/Veedja.MG.ResponsiveGui.Sample.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
@@ -19,7 +19,7 @@
 			"type": "process",
 			"args": [
 				"publish",
-				"${workspaceFolder}/GuiSample/GuiSample.csproj",
+				"${workspaceFolder}/Veedja.MG.ResponsiveGui.Sample/Veedja.MG.ResponsiveGui.Sample.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
@@ -33,7 +33,7 @@
 				"watch",
 				"run",
 				"--project",
-				"${workspaceFolder}/GuiSample/GuiSample.csproj"
+				"${workspaceFolder}/Veedja.MG.ResponsiveGui.Sample/Veedja.MG.ResponsiveGui.Sample.csproj"
 			],
 			"problemMatcher": "$msCompile"
 		}

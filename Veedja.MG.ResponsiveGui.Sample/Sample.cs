@@ -9,9 +9,9 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace GuiSample;
+namespace Veedja.MG.ResponsiveGui.Sample;
 
-public class ResponsiveGuiSample : Game
+public class SampleGame : Game
 {
 	// MonoGame stuff
 	private GraphicsDeviceManager _graphics;
@@ -32,7 +32,7 @@ public class ResponsiveGuiSample : Game
 	private RootGuiElement _grid;
 
 
-	public ResponsiveGuiSample()
+	public SampleGame()
 	{
 		_graphics = new GraphicsDeviceManager(this)
 		{

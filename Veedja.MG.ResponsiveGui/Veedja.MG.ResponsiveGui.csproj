@@ -1,24 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-	<LangVersion>10</LangVersion>
-	<Nullable>enable</Nullable>
-	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Title>Veedja - MonoGame Responsive GUI</Title>
-	<Authors>Paul Hazelton</Authors>
-	<Description>MGResponsiveGui let's you create GUIs in a similar fashion to using HTML and CSS to create web pages.
-The Layout class allows you to position elements using most of the same functionality availible in css, allowing you to easily create game menus that work on many different size screens.
-This package is currently not finished.</Description>
-	<Copyright>Copyright (c) Paul Hazelton 2023</Copyright>
-	<RepositoryUrl>https://github.com/PaulHazelton/MG.ResponsiveGUI</RepositoryUrl>
-	<PackageTags>MonoGame; GUI; UI; ResponsiveGUI; ResponsiveUI; Responsive; Videogame Menu;</PackageTags>
-	<Version>0.1.0</Version>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Veedja.MG.ResponsiveGui</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Paul Hazelton</Authors>
+    <Company>Veedja Games</Company>
+    <Title>Veedja - MonoGame Responsive GUI</Title>
+    <PackageDescription>
+      MGResponsiveGui let's you create GUIs in a similar fashion to using HTML and CSS to create web pages.
+      The Layout class allows you to position elements using most of the same functionality availible in css, allowing you to easily create game menus that work on many different size screens.
+      This package is currently not finished.
+    </PackageDescription>
+    <PackageTags>MonoGame; GUI; UI; ResponsiveGUI; ResponsiveUI; Responsive; Videogame Menu; Main Menu; Framework;</PackageTags>
+    <RepositoryUrl>https://github.com/PaulHazelton/MG.ResponsiveGUI</RepositoryUrl>
+    <Copyright>Copyright (c) Paul Hazelton 2023</Copyright>
+  <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
   <ItemGroup>
-	<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641">
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 </Project>
-
-<!-- <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303"> -->
