@@ -9,7 +9,7 @@ public class Checkbox : Button
 	public bool Value
 	{
 		get => _value;
-		private set
+		set
 		{
 			_value = value;
 			OnValueSet();
