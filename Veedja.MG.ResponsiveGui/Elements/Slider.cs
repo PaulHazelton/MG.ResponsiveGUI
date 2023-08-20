@@ -9,19 +9,23 @@ namespace Veedja.MG.ResponsiveGui.Elements;
 
 public class Slider : GuiElement
 {
+	// Static customization
 	public static float NudgeLerpSpeed = 12f;
+
+	// Properties
 	public float NudgeIncrement { get; set; } = 0.1f;
+	public Action<float>? ValueSetter { get; set; }
 
 	public float Value
 	{
 		get => _value;
-		private set
+		set
 		{
 			var newVal = MathHelper.Clamp(value, _min, _max);
 			if (_value != newVal)
 			{
 				_value = newVal;
-				_setValue?.Invoke(newVal);
+				ValueSetter?.Invoke(newVal);
 			}
 		}
 	}
@@ -32,8 +36,6 @@ public class Slider : GuiElement
 	private float _value;
 	private float _valueTarget;
 
-	private Action<float> _setValue;
-
 	// Dragging
 	private bool _isDragging;
 
@@ -43,7 +45,7 @@ public class Slider : GuiElement
 	private Button _handle;
 
 
-	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float initialValue, Action<float> valueSetter)
+	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float initialValue, Action<float>? valueSetter)
 	: base(sliderLayout)
 	{
 		_handleContainerLayout = new Layout()
@@ -55,17 +57,16 @@ public class Slider : GuiElement
 			AlignItems = AlignItems.Center,
 			JustifyContent = JustifyContent.Center
 		};
+		_handleContainer = new Container(_handleContainerLayout);
+		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle, NudgeSlider);
+		_handleContainer.AddChild(_handle);
+		AddChild(_handleContainer);
 
 		_min = min;
 		_max = max;
 		_value = initialValue;
 		_valueTarget = initialValue;
-		_setValue = valueSetter;
-		_handleContainer = new Container(_handleContainerLayout);
-		_handle = new SliderHandle(handleLayout, ClickSliderOrHandle, NudgeSlider);
-
-		_handleContainer.AddChild(_handle);
-		AddChild(_handleContainer);
+		ValueSetter = valueSetter;
 	}
 
 	protected override void OnMouseEvent(byte button, ButtonState buttonState)
@@ -99,9 +100,9 @@ public class Slider : GuiElement
 			proportion = -proportion;
 
 		if (Layout.FlexDirection == FlexDirection.Row)
-			handleContainerLayout.Left = (proportion * BoundingRectangle.Width);
+			handleContainerLayout.Left = proportion * BoundingRectangle.Width;
 		else
-			handleContainerLayout.Top = (proportion * BoundingRectangle.Height);
+			handleContainerLayout.Top = proportion * BoundingRectangle.Height;
 	}
 
 	protected override void OnDraw(SpriteBatch spriteBatch)
@@ -109,8 +110,6 @@ public class Slider : GuiElement
 		var foregroundRec = BoundingRectangle;
 
 		var proportion = GetPercentage();
-		// if (Layout.JustifyContent == JustifyContent.FlexEnd)
-		// 	proportion = 1 - proportion;
 
 		if (Layout.FlexDirection == FlexDirection.Row)
 			foregroundRec.Width = (int)(BoundingRectangle.Width * proportion);
@@ -148,7 +147,7 @@ public class Slider : GuiElement
 		_valueTarget = MathHelper.Clamp(_valueTarget + difference, _min, _max);
 
 		// If value changed, focus was consumed
-		return (_valueTarget != oldValue);
+		return _valueTarget != oldValue;
 	}
 
 	private void ClickSliderOrHandle(ButtonState buttonState)
