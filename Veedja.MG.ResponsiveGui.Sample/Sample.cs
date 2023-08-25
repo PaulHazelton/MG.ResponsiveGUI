@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Veedja.MG.ResponsiveGui.Sample;
 
@@ -347,7 +349,7 @@ public class SampleGame : Game
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
-					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
+					.AddChild(new Button(backButtonLayout, async () => await Quit(), "Quit"))
 				)
 			)
 		;
@@ -376,17 +378,17 @@ public class SampleGame : Game
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
 						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume))
-						.AddChild(new Label(valueIndicator, () => SoundEffect.MasterVolume.ToString("P0")))
+						.AddChild(new Label(valueIndicator, SoundEffect.MasterVolume.ToString("P0")))
 					)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Debug Borders"))
 						.AddChild(new Checkbox(checkbox, checkboxChecked, ElementRenderer.DrawDebugBorders))
-						.AddChild(new Label(valueIndicator, () => ElementRenderer.DrawDebugBorders.ToString()))
+						.AddChild(new Label(valueIndicator, ElementRenderer.DrawDebugBorders.ToString()))
 					)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Checkbox"))
 						.AddChild(new Checkbox(checkbox, checkboxChecked, uselessBool))
-						.AddChild(new Label(valueIndicator, () => uselessBool.ToString()))
+						.AddChild(new Label(valueIndicator, uselessBool.ToString()))
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
@@ -542,5 +544,11 @@ public class SampleGame : Game
 		using (var stream = TitleContainer.OpenStream(path))
 		using (var reader = new StreamReader(stream))
 			return reader.ReadToEnd();
+	}
+
+	private async Task Quit()
+	{
+		await Task.Delay(300);
+		Exit();
 	}
 }

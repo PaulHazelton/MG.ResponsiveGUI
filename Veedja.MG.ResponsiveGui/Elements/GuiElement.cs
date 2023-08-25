@@ -9,6 +9,7 @@ using Veedja.MG.ResponsiveGui.Styles;
 using Veedja.MG.ResponsiveGui.Common;
 using Veedja.MG.ResponsiveGui.Rendering;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Veedja.MG.ResponsiveGui.Elements;
 
@@ -205,6 +206,9 @@ public abstract class GuiElement : IDisposable
 	#endregion
 
 	#region Public/Protected properties (grouped with private backing fields)
+
+	// Identifier
+	public string Id { get; set; } = string.Empty;
 
 	// Structure
 	internal List<GuiElement> _children;
@@ -530,7 +534,7 @@ public abstract class GuiElement : IDisposable
 
 		return count;
 	}
-	private GuiElement? NearestAncestorWhere(Func<GuiElement, bool> predicate)
+	public GuiElement? NearestAncestorWhere(Func<GuiElement, bool> predicate)
 	{
 		if (ParentElement == null)
 			return null;
@@ -539,6 +543,23 @@ public abstract class GuiElement : IDisposable
 			return ParentElement;
 
 		return ParentElement.NearestAncestorWhere(predicate);
+	}
+	public GuiElement? GetElementById(string id)
+	{
+		if (Id == id)
+			return this;
+
+		GuiElement? result;
+
+		// Loop through each child, return
+		foreach (var child in Children)
+		{
+			result = GetElementById(id);
+			if (result != null)
+				return result;
+		}
+
+		return null;
 	}
 
 	// Other
