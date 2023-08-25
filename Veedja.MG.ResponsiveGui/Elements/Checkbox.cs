@@ -5,28 +5,32 @@ namespace Veedja.MG.ResponsiveGui.Elements;
 
 public class Checkbox : Button
 {
+	// Backing fields
 	private bool _value;
+
+	// Properties
 	public bool Value
 	{
 		get => _value;
 		set
 		{
-			_value = value;
-			OnValueSet();
+			if (_value != value)
+			{
+				_value = value;
+				OnValueSet();
+			}
 		}
 	}
-
-	public Action<bool>? ValueSetter { get; set; }
+	public Action<bool>? OnValueChange { get; set; }
 
 	public Layout UncheckedLayout { get; set; }
 	public Layout CheckedLayout { get; set; }
 
 
-	public Checkbox(Layout uncheckedLayout, Layout checkedLayout, bool value, Action<bool>? valueSetter)
+	public Checkbox(Layout uncheckedLayout, Layout checkedLayout, bool value)
 		: base(value ? checkedLayout : uncheckedLayout, null, string.Empty)
 	{
 		_value = value;
-		ValueSetter = valueSetter;
 
 		UncheckedLayout = uncheckedLayout;
 		CheckedLayout = checkedLayout;
@@ -43,6 +47,6 @@ public class Checkbox : Button
 	{
 		Layout = Value ? CheckedLayout : UncheckedLayout;
 
-		ValueSetter?.Invoke(Value);
+		OnValueChange?.Invoke(Value);
 	}
 }
