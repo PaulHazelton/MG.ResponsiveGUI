@@ -375,7 +375,7 @@ public class SampleGame : Game
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume, (value) => SoundEffect.MasterVolume = value))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume))
 						.AddChild(new Label(valueIndicator, () => SoundEffect.MasterVolume.ToString("P0")))
 					)
 					.AddChild(new Container(formRowLayout)
