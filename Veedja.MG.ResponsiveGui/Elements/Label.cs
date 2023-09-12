@@ -24,7 +24,6 @@ public class Label : GuiElement
 			}
 		}
 	}
-	public Func<string>? TextGetter { get; set; }
 
 
 	public Label(Layout? layout, string text = "") : base(layout)
