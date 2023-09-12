@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Threading.Tasks;
 
 namespace Veedja.MG.ResponsiveGui.Sample;
 
@@ -30,6 +31,10 @@ public class SampleGame : Game
 	private RootGuiElement _about;
 	private RootGuiElement _settings;
 	private RootGuiElement _grid;
+
+	// Elements to keep track of to reference later
+	private Label _volumeIndicator;
+	private Label _drawDebugBordersIndicator;
 
 
 	public SampleGame()
@@ -347,7 +352,7 @@ public class SampleGame : Game
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_about), "About"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_settings), "Settings"))
 					.AddChild(new Button(buttonLayout, () => SwitchBody(_grid), "Grid Example"))
-					.AddChild(new Button(backButtonLayout, Exit, "Quit"))
+					.AddChild(new Button(backButtonLayout, async () => await Quit(), "Quit"))
 				)
 			)
 		;
@@ -368,25 +373,22 @@ public class SampleGame : Game
 		#endregion
 
 		#region Settings
-		bool uselessBool = false;
+		_volumeIndicator = new Label(valueIndicator, SoundEffect.MasterVolume.ToString("P0"));
+		_drawDebugBordersIndicator = new Label(valueIndicator, ElementRenderer.DrawDebugBorders.ToString());
+
 		_settings
 			.AddChild(new Container(menuFrameLayout)
 				.AddChild(new Label(headingLayout, "Settings"))
 				.AddChild(new DragScrollContainer(scrollingButtonContainer)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Volume"))
-						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume, (value) => SoundEffect.MasterVolume = value))
-						.AddChild(new Label(valueIndicator, () => SoundEffect.MasterVolume.ToString("P0")))
+						.AddChild(new Slider(formSlider, sliderHandle, 0, 1, SoundEffect.MasterVolume) { OnValueTargetChange = OnVolumeChange })
+						.AddChild(_volumeIndicator)
 					)
 					.AddChild(new Container(formRowLayout)
 						.AddChild(new Label(formLabel, "Debug Borders"))
-						.AddChild(new Checkbox(checkbox, checkboxChecked, ElementRenderer.DrawDebugBorders, (value) => ElementRenderer.DrawDebugBorders = value))
-						.AddChild(new Label(valueIndicator, () => ElementRenderer.DrawDebugBorders.ToString()))
-					)
-					.AddChild(new Container(formRowLayout)
-						.AddChild(new Label(formLabel, "Checkbox"))
-						.AddChild(new Checkbox(checkbox, checkboxChecked, uselessBool, (value) => uselessBool = value))
-						.AddChild(new Label(valueIndicator, () => uselessBool.ToString()))
+						.AddChild(new Checkbox(checkbox, checkboxChecked, ElementRenderer.DrawDebugBorders) { OnValueChange = OnDrawDebugBorderChange })
+						.AddChild(_drawDebugBordersIndicator)
 					)
 				)
 				.AddChild(new Button(backButtonLayout, () => SwitchBody(_title), "Back"))
@@ -429,6 +431,17 @@ public class SampleGame : Game
 
 		_body = _title;
 		WindowSizeChanged();
+	}
+
+	private void OnVolumeChange(float value)
+	{
+		SoundEffect.MasterVolume = value;
+		_volumeIndicator.Text = value.ToString("P0");
+	}
+	private void OnDrawDebugBorderChange(bool value)
+	{
+		ElementRenderer.DrawDebugBorders = value;
+		_drawDebugBordersIndicator.Text = value.ToString();
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -532,8 +545,8 @@ public class SampleGame : Game
 		GuiElement.UpdateSize(w, h);
 	}
 
-	private bool WasPressed(Keys key) => (_newKeyState.IsKeyDown(key) && _oldKeyState.IsKeyUp(key));
-	private bool WasReleased(Keys key) => (_newKeyState.IsKeyUp(key) && _oldKeyState.IsKeyDown(key));
+	private bool WasPressed(Keys key) => _newKeyState.IsKeyDown(key) && _oldKeyState.IsKeyUp(key);
+	private bool WasReleased(Keys key) => _newKeyState.IsKeyUp(key) && _oldKeyState.IsKeyDown(key);
 
 	private T LoadJson<T>(string fileName) => JsonSerializer.Deserialize<T>(LoadText(fileName));
 	private string LoadText(string fileName)
@@ -542,5 +555,11 @@ public class SampleGame : Game
 		using (var stream = TitleContainer.OpenStream(path))
 		using (var reader = new StreamReader(stream))
 			return reader.ReadToEnd();
+	}
+
+	private async Task Quit()
+	{
+		await Task.Delay(300);
+		Exit();
 	}
 }

@@ -9,18 +9,21 @@ namespace Veedja.MG.ResponsiveGui.Elements;
 public class Label : GuiElement
 {
 	private Line[] _lines;
-
 	private string _text = "";
+
+	// Properties
 	public string Text
 	{
 		get => _text;
 		set
 		{
 			if (_text != value)
+			{
 				_text = value;
+				ComputeText();
+			}
 		}
 	}
-	public Func<string>? TextGetter { get; set; }
 
 
 	public Label(Layout? layout, string text = "") : base(layout)
@@ -29,20 +32,6 @@ public class Label : GuiElement
 		_lines = new Line[0];
 
 		ComputeText();
-	}
-	public Label(Layout? layout, Func<string> textGetter) : base(layout)
-	{
-		TextGetter = textGetter;
-		Text = textGetter();
-		_lines = new Line[0];
-
-		ComputeText();
-	}
-
-	protected override void OnUpdate(GameTime gameTime)
-	{
-		if (TextGetter != null)
-			Text = TextGetter();
 	}
 
 	protected override void AfterRectangleCompute()
@@ -66,7 +55,6 @@ public class Label : GuiElement
 		ComputeTotalTextSize();
 		AlignLines();
 	}
-
 	private void CreateLines()
 	{
 		if (CurrentLayout.Font == null || Text == string.Empty)

@@ -9,43 +9,53 @@ namespace Veedja.MG.ResponsiveGui.Elements;
 
 public class Slider : GuiElement
 {
-	// Static customization
-	public static float NudgeLerpSpeed = 12f;
+	private readonly Layout _handleContainerLayout;
+	private readonly Container _handleContainer;
+	private readonly Button _handle;
+
+	// Backing fields
+	private float _value;
+	private float _valueTarget;
 
 	// Properties
+	public float NudgeLerpSpeed { get; set; } = 12f;
 	public float NudgeIncrement { get; set; } = 0.1f;
-	public Action<float>? ValueSetter { get; set; }
 
+	public float Min { get; set; }
+	public float Max { get; set; }
 	public float Value
 	{
 		get => _value;
 		set
 		{
-			var newVal = MathHelper.Clamp(value, _min, _max);
+			var newVal = MathHelper.Clamp(value, Min, Max);
 			if (_value != newVal)
 			{
 				_value = newVal;
-				ValueSetter?.Invoke(newVal);
+				OnValueChange?.Invoke(newVal);
 			}
 		}
 	}
+	public float ValueTarget
+	{
+		get => _valueTarget;
+		set
+		{
+			var newVal = MathHelper.Clamp(value, Min, Max);
+			if (_valueTarget != newVal)
+			{
+				_valueTarget = newVal;
+				OnValueTargetChange?.Invoke(newVal);
+			}
+		}
+	}
+	public Action<float>? OnValueChange { get; set; }
+	public Action<float>? OnValueTargetChange { get; set; }
 
-	// Range and value
-	private float _min;
-	private float _max;
-	private float _value;
-	private float _valueTarget;
-
-	// Dragging
-	private bool _isDragging;
-
-	// Sub elements
-	private Layout _handleContainerLayout;
-	private Container _handleContainer;
-	private Button _handle;
+	public bool IsDragging { get; set; }
 
 
-	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float initialValue, Action<float>? valueSetter)
+	public Slider(Layout sliderLayout, Layout handleLayout, float min, float max, float value)
 	: base(sliderLayout)
 	{
 		_handleContainerLayout = new Layout()
@@ -62,11 +72,10 @@ public class Slider : GuiElement
 		_handleContainer.AddChild(_handle);
 		AddChild(_handleContainer);
 
-		_min = min;
-		_max = max;
-		_value = initialValue;
-		_valueTarget = initialValue;
-		ValueSetter = valueSetter;
+		_value = value;
+		Min = min;
+		Max = max;
+		ValueTarget = value;
 	}
 
 	protected override void OnMouseEvent(byte button, ButtonState buttonState)
@@ -75,12 +84,12 @@ public class Slider : GuiElement
 			ClickSliderOrHandle(buttonState);
 
 		if (buttonState == ButtonState.Released)
-			_isDragging = false;
+			IsDragging = false;
 	}
 
 	protected override void OnUpdate(GameTime gameTime)
 	{
-		if (_isDragging)
+		if (IsDragging)
 		{
 			ComputeValue();
 			// Don't un-activate when mouse goes above or below slider handle
@@ -89,7 +98,11 @@ public class Slider : GuiElement
 		else
 		{
 			// Lerp value to target
-			Value = MathHelper.Lerp(Value, _valueTarget, (float)(NudgeLerpSpeed * gameTime.ElapsedGameTime.TotalSeconds));
+			Value = MathHelper.Lerp(Value, ValueTarget, (float)(NudgeLerpSpeed * gameTime.ElapsedGameTime.TotalSeconds));
+
+			// Snap to end if close
+			if (Math.Abs(ValueTarget - Value) < (Max - Min) * 0.001f)
+				Value = ValueTarget;
 		}
 
 		var handleContainerLayout = _handleContainer.Layout;
@@ -133,35 +146,35 @@ public class Slider : GuiElement
 		if (!Layout.FlexDirection.IsParallelWith(d))
 			return false;
 
-		var oldValue = _valueTarget;
+		var oldValue = ValueTarget;
 		float difference;
 
 		if (s == UISide.End)
-			difference = NudgeIncrement * (_max - _min);
+			difference = NudgeIncrement * (Max - Min);
 		else
-			difference = -NudgeIncrement * (_max - _min);
+			difference = -NudgeIncrement * (Max - Min);
 
 		if (Layout.JustifyContent == JustifyContent.FlexEnd)
 			difference *= -1;
 
-		_valueTarget = MathHelper.Clamp(_valueTarget + difference, _min, _max);
+		ValueTarget = MathHelper.Clamp(ValueTarget + difference, Min, Max);
 
 		// If value changed, focus was consumed
-		return _valueTarget != oldValue;
+		return ValueTarget != oldValue;
 	}
 
 	private void ClickSliderOrHandle(ButtonState buttonState)
 	{
 		if (buttonState == ButtonState.Pressed)
 		{
-			_isDragging = true;
+			IsDragging = true;
 			ComputeValue();
 		}
 	}
 
 	private float GetPercentage()
 	{
-		return (Value - _min) / (_max - _min);
+		return (Value - Min) / (Max - Min);
 	}
 
 	private void ComputeValue()
@@ -176,8 +189,8 @@ public class Slider : GuiElement
 		if (Layout.JustifyContent == JustifyContent.FlexEnd)
 			proportion = 1 - proportion;
 
-		Value = MathHelper.Lerp(_min, _max, proportion);
-		_valueTarget = Value;
+		Value = MathHelper.Lerp(Min, Max, proportion);
+		ValueTarget = Value;
 	}
 
 

@@ -44,6 +44,7 @@ public class Button : Label
 	protected override void OnUpdate(GameTime deltaTime)
 	{
 		// If the user dragged, un-activate
+		// TODO: Don't use DidMouseMove, try to remove this weird variable
 		if (DidMouseMove && State == ElementStates.Activated)
 		{
 			var dragDifference = TransformedMouse - _mouseDragStart;

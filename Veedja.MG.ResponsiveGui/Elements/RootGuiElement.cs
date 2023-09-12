@@ -102,5 +102,4 @@ public class RootGuiElement : GuiElement
 	{
 		this.ToAll(e => e.ResetTransitions(e == FocusedElement ? ElementStates.Hovered : ElementStates.Neutral));
 	}
-
 }
